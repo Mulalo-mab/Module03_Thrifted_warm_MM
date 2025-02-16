@@ -6,6 +6,15 @@ const getOrderItems = async () => {
 }
 
 
+const getOrderItemById = async (order_item_id) => {
+  let [result] = await pool.query(`SELECT o.*, p.* 
+      FROM order_items AS o 
+      INNER JOIN products AS p ON o.product_id = p.product_id 
+      WHERE o.order_item_id = ?`, [order_item_id]);
+  return result;
+};
+
+
 const insertOrderItems = async (order_id, product_id, quantity, price) => {
   await pool.query ("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES(?, ?, ?, ?)", [order_id, product_id, quantity, price]);
 
@@ -26,4 +35,4 @@ const updateOrderItems =async (order_id, product_id, quantity, price, order_item
   
 
 
-export  {getOrderItems, insertOrderItems, deleteOrderItems, updateOrderItems}
+export  {getOrderItems, getOrderItemById, insertOrderItems, deleteOrderItems, updateOrderItems}

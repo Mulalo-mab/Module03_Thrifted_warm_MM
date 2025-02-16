@@ -1,4 +1,4 @@
-import { getPayments, insertPayment, deletePayment,updatePayment } from "../model/paymentsDb.js";
+import { getPayments, getPaymentById, insertPayment, deletePayment,updatePayment } from "../model/paymentsDb.js";
 
 const getPaymentsCon = async (req, res) => {
   try {
@@ -7,6 +7,22 @@ const getPaymentsCon = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+const getPaymentByIdCon = async (req, res) => {
+  try {
+    const { payment_id } = req.params;  // Assuming order_id comes from URL params
+    const payment = await getPaymentById(payment_id);
+    
+    if (payment.length === 0) {
+      return res.status(404).json({ message: 'payment not found' });
+    }
+    res.status(200).json(payment);
+  } catch (err) {
+    res.status(500).json({ error: err.message});
+  }
+};
+
 
 const insertPaymentCon = async (req, res) => {
     try {
@@ -45,4 +61,4 @@ const insertPaymentCon = async (req, res) => {
     }
   };
 
-export { getPaymentsCon, insertPaymentCon, deletePaymentCon, updatePaymentCon };
+export { getPaymentsCon, getPaymentByIdCon, insertPaymentCon, deletePaymentCon, updatePaymentCon };

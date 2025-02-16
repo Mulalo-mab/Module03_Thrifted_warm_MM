@@ -1,9 +1,10 @@
 import express from "express"
-import { getOrderItemsCon, insertOrderItemsCon, deleteOrderItemsCon, updateOrderItemsCon } from "../controller/orderItemCon.js"
+import { getOrderItemsCon, getOrderItemByIdCon, insertOrderItemsCon, deleteOrderItemsCon, updateOrderItemsCon } from "../controller/orderItemCon.js"
 
 
 const router = express.Router()
 router.get("/", getOrderItemsCon)
+router.get("/:order_item_id", getOrderItemByIdCon)
 router.post("/", insertOrderItemsCon)
 router.delete("/:order_item_id", deleteOrderItemsCon)
 router.put("/:order_item_id", updateOrderItemsCon)

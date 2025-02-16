@@ -4,6 +4,7 @@ config()
 import ordersRouter from "./routes/ordersRouter.js"
 import orderItemRouter from "./routes/orderItemRouter.js"
 import paymentsRouter from "./routes/paymentsRouter.js"
+import authRouter from "./routes/authRouter.js"
 import cors from "cors"
 
 import usersRouter from "./Router/usersRouter.js"
@@ -20,6 +21,7 @@ app.use(express.json())//to allow data to be added to the Json()file
 app.use("/orders", ordersRouter)
 app.use("/order_items", orderItemRouter)
 app.use("/payments", paymentsRouter)
+app.use("/api/auth", authRouter);
 
 app.use("/users", usersRouter)
 app.use("/productcategories", productsCategoriesRouter)

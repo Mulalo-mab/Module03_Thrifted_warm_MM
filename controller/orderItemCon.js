@@ -1,4 +1,4 @@
-import { getOrderItems, insertOrderItems, deleteOrderItems, updateOrderItems } from "../model/orderItemsDb.js";
+import { getOrderItems, getOrderItemById, insertOrderItems, deleteOrderItems, updateOrderItems } from "../model/orderItemsDb.js";
 
 const getOrderItemsCon = async (req, res) => {
     try{
@@ -8,6 +8,20 @@ const getOrderItemsCon = async (req, res) => {
     }
 };
 
+
+const getOrderItemByIdCon = async (req, res) => {
+  try {
+    const { order_item_id } = req.params;  // Assuming order_id comes from URL params
+    const order_item = await getOrderItemById(order_item_id);
+    
+    if (order_item.length === 0) {
+      return res.status(404).json({ message: 'Order item not found' });
+    }
+    res.status(200).json(order_item);
+  } catch (err) {
+    res.status(500).json({ error: err.message});
+  }
+};
 
 const insertOrderItemsCon = async (req,res) => {
     try{
@@ -47,4 +61,4 @@ const insertOrderItemsCon = async (req,res) => {
     }
   }
 
-export {getOrderItemsCon, insertOrderItemsCon, deleteOrderItemsCon, updateOrderItemsCon}
+export {getOrderItemsCon, getOrderItemByIdCon, insertOrderItemsCon, deleteOrderItemsCon, updateOrderItemsCon}

@@ -47,7 +47,7 @@
           { name: "Products", route: "/products", icon: "fas fa-box" },
           { name: "Favorites", route: "/favorites", icon: "fas fa-heart" },
           { name: "Cart", route: "/cart", icon: "fas fa-shopping-cart" },
-          { name: "User", route: "#", icon: "fas fa-user" },
+          { name: "Checkout", route: "/checkout", icon: "fas fa-shopping-bag" },
           { name: "Login/Logout", route: "#", icon: "fas fa-sign-in-alt" }
         ],
         logo: require("../assets/Thrifted_Warmth_Promo.jpg")

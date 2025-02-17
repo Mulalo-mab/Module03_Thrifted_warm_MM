@@ -1,12 +1,12 @@
 import express from "express"
 import {config} from "dotenv"
 config()
-import ordersRouter from "./routes/ordersRouter.js"
-import orderItemRouter from "./routes/orderItemRouter.js"
-import paymentsRouter from "./routes/paymentsRouter.js"
-import authRouter from "./routes/authRouter.js"
 import cors from "cors"
 
+import ordersRouter from "./Router/ordersRouter.js"
+import orderItemRouter from "./Router/orderItemRouter.js"
+import paymentsRouter from "./Router/paymentsRouter.js"
+import authRouter from "./Router/authRouter.js"
 import usersRouter from "./Router/usersRouter.js"
 import productsCategoriesRouter from "./Router/productsCategoriesRouter.js"
 import productsRouter from "./Router/productsRouter.js"
@@ -22,7 +22,6 @@ app.use("/orders", ordersRouter)
 app.use("/order_items", orderItemRouter)
 app.use("/payments", paymentsRouter)
 app.use("/api/auth", authRouter);
-
 app.use("/users", usersRouter)
 app.use("/productcategories", productsCategoriesRouter)
 app.use("/products", productsRouter)

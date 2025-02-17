@@ -6,7 +6,7 @@ const router = express.Router()
 router.get("/", getAllProductsCon)
 router.get("/:product_id", getSingleProductCon )
 router.post("/", insertProductCon)
-router.post("/", updateProductCon)
+router.patch("/", updateProductCon)
 router.delete("/:product_id", deleteProductCon )
 
 export default router

@@ -23,11 +23,12 @@ const getSingleProduct = async (product_id) => {
       [category_id, name, description, size, color, price, stock, image_url]);
     return "Product inserted successfully!";
   };
- const updateProduct = async (product_id, data) => {
+  const updateProduct = async (product_id, data) => {
     const { category_id, name, description, size, color, price, stock, image_url } = data;
     let updateFields = [];
     let updateValues = [];
-  
+
+    // Collecting update fields dynamically
     if (category_id) {
       updateFields.push("category_id = ?");
       updateValues.push(category_id);
@@ -60,13 +61,36 @@ const getSingleProduct = async (product_id) => {
       updateFields.push("image_url = ?");
       updateValues.push(image_url);
     }
-  
+
+    // Check if there are fields to update
+    if (updateFields.length === 0) {
+      throw new Error("No fields to update");
+    }
+
     updateValues.push(product_id);
-  
+
     const query = `UPDATE Products SET ${updateFields.join(", ")} WHERE product_id = ?`;
-    await pool.query(query, updateValues);
-    return "Product updated successfully!";
+
+    console.log("Final Query:", query);
+    console.log("Update Values:", updateValues);
+
+    try {
+      const [result] = await pool.query(query, updateValues);
+
+      console.log("SQL Result:", result);
+
+      // Check if any row was affected
+      if (result.affectedRows === 0) {
+        throw new Error("Product not found or no changes made");
+      }
+
+      return "Product updated successfully!";
+    } catch (error) {
+      console.error("Error updating product:", error.message);
+      throw new Error("Failed to update product");
+    }
 };
+
 
 const deleteProduct = async (product_id) => {
     await pool.query("DELETE FROM Products WHERE product_id = ?", [product_id]);

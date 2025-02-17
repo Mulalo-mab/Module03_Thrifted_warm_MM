@@ -45,7 +45,7 @@
           { name: "Favorites", route: "/favorites", icon: "fas fa-heart" },
           { name: "Cart", route: "/cart", icon: "fas fa-shopping-cart" },
           { name: "User", route: "#", icon: "fas fa-user" },
-          { name: "Login/Logout", route: "#", icon: "fas fa-sign-in-alt" }
+          { name: "Login/Logout", route: "/login", icon: "fas fa-sign-in-alt" }
         ]
       };
     },

@@ -3,12 +3,24 @@ import HomeView from '../views/HomeView.vue'
 import ProductsView from '../views/ProductsView.vue'
 import FavoritesView from '../views/FavoritesView.vue'
 import CartView from '../views/CartView.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path:'/login',
+    name:'login',
+    component: LoginView
+  },
+  {
+    path:'/register',
+    name:'register',
+    component: RegisterView
   },
   {
     path: '/products',

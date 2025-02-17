@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProductsView from '../views/ProductsView.vue'
-import FavoritesView from '../views/FavoritesView.vue'
 import CartView from '../views/CartView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
@@ -28,14 +27,14 @@ const routes = [
     component: ProductsView
   },
   {
-    path: '/favorites',
-    name: 'favorites',
-    component: FavoritesView
-  },
-  {
     path: '/cart',
     name: 'cart',
     component: CartView
+  },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component: CheckOutView
   }
 ]
 
@@ -43,5 +42,4 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes
 })
-
 export default router

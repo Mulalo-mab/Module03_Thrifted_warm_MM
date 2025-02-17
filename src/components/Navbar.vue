@@ -1,7 +1,10 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
+        <img :src="logo" alt="circular image" class="logo d-inline-block align-text-top">
+
         <a class="navbar-brand" href="#">Thrifted Warmth</a>
+       
         <button 
           class="navbar-toggler" 
           type="button" 
@@ -47,6 +50,10 @@
           { name: "User", route: "#", icon: "fas fa-user" },
           { name: "Login/Logout", route: "/login", icon: "fas fa-sign-in-alt" }
         ]
+          { name: "Checkout", route: "/checkout", icon: "fas fa-shopping-bag" },
+          { name: "Login/Logout", route: "#", icon: "fas fa-sign-in-alt" }
+        ],
+        logo: require("../assets/Thrifted_Warmth_Promo.jpg")
       };
     },
     methods: {
@@ -59,7 +66,9 @@
   
   <style scoped>
   .navbar {
-    background-color: #5161ce;
+    background-color: #d6d17f;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 2rem;
   }
   .navbar-brand {
     color: #fff;
@@ -73,5 +82,13 @@
   .navbar-nav .nav-link.active {
     color: #fff;
   }
+  .logo {
+  width: 60px; /* Set both width and height to make the image square */
+  height: 60px;
+  object-fit: cover; /* Ensures the image doesn’t get distorted */
+  border-radius: 50%; /* Makes it circular */
+}
+
+
   </style>
   

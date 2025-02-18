@@ -4,6 +4,7 @@ import ProductsView from '../views/ProductsView.vue'
 import FavoritesView from '../views/FavoritesView.vue'
 import CartView from '../views/CartView.vue'
 import CheckOutView from '../views/CheckOutView.vue'
+import ProductDetails from '../components/ProductDetails.vue'
 
 const routes = [
   {
@@ -30,7 +31,15 @@ const routes = [
     path: '/checkout',
     name: 'checkout',
     component: CheckOutView
-  }
+  },
+  {
+    path: "/product/:id",
+    name: "ProductDetails",
+    component: ProductDetails,
+    props: (route) => ({
+      product: JSON.parse(route.query.product),
+    }),
+  },
 ]
 
 const router = createRouter({

@@ -2,50 +2,57 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    All_Products:null
+    All_Products: null,
+    cart: JSON.parse(localStorage.getItem("cart")) || [], // Load cart from localStorage
   },
   mutations: {
-    setAll_Products(state,payload){
-      state.All_Products = payload
-    }
+    setAll_Products(state, payload) {
+      state.All_Products = payload;
+    },
+    ADD_TO_CART(state, item) {
+      state.cart.push(item);
+      localStorage.setItem("cart", JSON.stringify(state.cart)); // Save cart to localStorage
+    },
+    REMOVE_FROM_CART(state, productId) {
+      state.cart = state.cart.filter(item => item.id !== productId);
+      localStorage.setItem("cart", JSON.stringify(state.cart)); // Update localStorage after removing item
+    },
   },
   actions: {
-  async getData({commit},payload){
-    let {All_Products} = await (await fetch('http://localhost:5050/products')).json()
+    async getData({ commit }) {
+      try {
+        const response = await fetch('http://localhost:5050/products');
+        const { All_Products } = await response.json();
 
-  // let products = await fetch('http://localhost:5050/products')
-  // let info = await products.json()
+        const updatedProducts = All_Products.map(product => {
+          let baseUrl = 'https://raw.githubusercontent.com/awonkenkibi/images/main/';
+          if (product.category_name === 'Women') {
+            baseUrl += 'WomenProducts/';
+          } else if (product.category_name === 'Men') {
+            baseUrl += 'MenProducts/';
+          } else if (product.category_name === 'Kids') {
+            baseUrl += 'KidsProducts/';
+          } else {
+            baseUrl += 'OtherProducts/';
+          }
 
-  console.log(All_Products);
-  commit('setAll_Products', All_Products)
+          return {
+            ...product,
+            image_url: `${baseUrl}${product.image_url.split('/').pop()}`
+          };
+        });
+
+        commit('setAll_Products', updatedProducts);
+
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    },
+    addToCart({ commit }, item) {
+      commit("ADD_TO_CART", item);
+    },
+    removeFromCart({ commit }, productId) {
+      commit("REMOVE_FROM_CART", productId);
+    },
   }
-  }
-})
-
-// import { createStore } from "vuex";
-
-// export default createStore({
-//   state: {
-//     favorites: [],
-//     products: [
-//       { id: 1, name: "Men's Jacket", category: "Men", price: 150, image: "https://via.placeholder.com/150" },
-//       { id: 2, name: "Women's Dress", category: "Women", price: 200, image: "https://via.placeholder.com/150" },
-//       { id: 3, name: "Kids' Sneakers", category: "Kids", price: 50, image: "https://via.placeholder.com/150" },
-//       { id: 4, name: "Men's Watch", category: "Men", price: 250, image: "https://via.placeholder.com/150" },
-//       { id: 5, name: "Women's Handbag", category: "Women", price: 180, image: "https://via.placeholder.com/150" },
-//       { id: 6, name: "Kids' T-Shirt", category: "Kids", price: 30, image: "https://via.placeholder.com/150" }
-//     ]
-//   },
-//   mutations: {
-//     toggleFavorite(state, productId) {
-//       const index = state.favorites.indexOf(productId);
-//       if (index === -1) {
-//         state.favorites.push(productId);
-//       } else {
-//         state.favorites.splice(index, 1);
-//       }
-//     }
-//   }
-// });
-
-
+});

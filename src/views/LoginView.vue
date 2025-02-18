@@ -1,55 +1,72 @@
 <template>
-
-<h1>LOGIN</h1>
-<div>
-    <form @submit.prevent="handleLogin">
+  <div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4 shadow-lg" style="width: 400px;">
+      <h1 class="text-center">LOGIN</h1>
+      <form @submit.prevent="handleLogin">
         <div class="mb-3">
-  <label for="formGroupExampleInput" class="form-label">Email:</label>
-  <input type="email" class="form-control" id="formGroupExampleInput" v-model="email" placeholder="jonh.doe@example.com">
-</div> <br>
-<div class="mb-3">
-  <label for="formGroupExampleInput2" class="form-label">Password:</label>
-  <input type="password" class="form-control" id="formGroupExampleInput2" v-model="password" placeholder="password">
+          <label for="email" class="form-label">Email:</label>
+          <input type="email" class="form-control" id="email" v-model="formData.email" placeholder="john.doe@example.com" required />
+        </div>
 
-  </div> <br> <br>
-  <div class="col-auto">
-    <button type="submit" class="btn btn-primary">Login</button>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password:</label>
+          <input type="password" class="form-control" id="password" v-model="formData.password" placeholder="password" required />
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </div>
+
+        <div class="mt-3 text-center">
+          <p>Don't have an account? 
+            <button @click="goToRegister" class="btn btn-link p-0">Register</button>
+          </p>
+        </div>
+      </form>
+    </div>
   </div>
-</form>
-   
-</div>
 </template>
 
+
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
-        users:[
-            {email: 'mulalo@gmail.com',
-      password: 'password1'},
-      {email: 'sia@gmail.com',
-      password: 'password2'}
-        ],
-      formData:{
-        email: '',
-        password:''
-      }
+      formData: {
+        email: "",
+        password: ""
+      },
+      loading: false,
+      errorMessage: ""
     };
   },
   methods: {
-    handleLogin() {
-        const email= this.formData.email.trim();
-        const password = this.formData.password.trim();
+    async handleLogin() {
+      this.loading = true;
+      this.errorMessage = "";
+      
+      try {
+        const response = await axios.post("http://localhost:5050/api/auth/login", this.formData);
+        
+        if (response.data) {  
+          alert("Login successful!");
+          
+          // Store user data if needed
+          localStorage.setItem("user", JSON.stringify(response.data));
 
-        const user= this.users.find(user => user.email === email && user.password === password)
-      // Check if the user is an existing user
-      if (user) {
-        alert(`You are logged in.`)
-        this.$router.push({name:'home'});
-      } else {
-        alert('Invalid email or password');
-        this.$router.push({name:'register'});
+          // Redirect to home page
+          this.$router.push({ name: "home" });
+        }
+      } catch (error) {
+        alert(this.errorMessage = error.response?.data?.error || "Login failed. Please try again.");
+      } finally {
+        this.loading = false;
       }
+    },
+    goToRegister() {
+      this.$router.push({ name: "register" });
     }
   }
 };

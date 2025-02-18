@@ -9,6 +9,8 @@
       <br>
       <router-link to="/products" class="nav-link" @click="hideMenu">Our Winter Wear</router-link>
       <br>
+      <router-link to="/login" class="nav-link" @click="hideMenu">Login</router-link>
+      <br>
       <router-link to="/"></router-link>
       </div>
      

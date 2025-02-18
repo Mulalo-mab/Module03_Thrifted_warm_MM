@@ -1,7 +1,6 @@
-
 import dotenv from "dotenv";
-import { registerUser} from "../model/authDb.js";
-
+import { registerUser, getUserByEmail} from "../Model/authDb.js";
+import bcrypt from "bcryptjs";
 dotenv.config();
 // Register User
  const registerCon = async (req, res) => {
@@ -11,5 +10,13 @@ dotenv.config();
     res.json({ message: result.message });
 };
 
+const login = async (req, res) => {
+    const { email, password} = req.body;
+    const users = await getUserByEmail(email);
+    if (!users) return res.status(401).json({ error: "Invalid credentials" });
+    const isMatch = await bcrypt.compare(password, users.password);
+    if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
+    res.json({message:'Yay!!! you logged in'})
+}
 
-export { registerCon };
+export { registerCon, login };

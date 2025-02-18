@@ -5,6 +5,9 @@ import router from './router'
 import store from './store'
 // For Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
+// fonts 
+import "@/assets/fonts.css";
+
 
 // For Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';

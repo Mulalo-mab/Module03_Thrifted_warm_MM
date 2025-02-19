@@ -14,13 +14,13 @@ const registerUser = async (name, email, password, phone, address) => {
     }
 };
 
-const getUserByUseId = async (user_id, email) => {
+const getUserByEmail = async (email) => {
     try {
-        const [results] = await pool.query("SELECT * FROM users WHERE user_id = ? AND email = ?", [user_id, email]);
+        const [results] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
         return results.length > 0 ? results[0] : null;
     } catch (error) {
         return null;
     }
 };
 
-export {getUserByUseId, registerUser }
+export {getUserByEmail, registerUser }

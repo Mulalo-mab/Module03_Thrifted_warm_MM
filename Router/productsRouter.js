@@ -1,6 +1,5 @@
 import express from "express"
 import{getAllProductsCon, getSingleProductCon, insertProductCon, updateProductCon, deleteProductCon} from "../Controller/productsController.js"
-
 const router = express.Router()
 
 router.get("/", getAllProductsCon)

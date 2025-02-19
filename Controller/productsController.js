@@ -41,4 +41,5 @@ const deleteProductCon =  async (req, res) => {
     });
 }
 
+
 export {getAllProductsCon, getSingleProductCon, insertProductCon, updateProductCon, deleteProductCon}

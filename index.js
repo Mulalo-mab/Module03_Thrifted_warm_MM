@@ -13,6 +13,8 @@ import productsRouter from "./Router/productsRouter.js"
 
 //creating app 
 const app =express()
+
+
 app.use(cors())
 app.use(express.json())//to allow data to be added to the Json()file
 //to access the env config file 
@@ -32,5 +34,4 @@ app.listen(PORT, ()=>{
     console.log("http://localhost:"+PORT)
     console.log("I am running")
 })
-
 

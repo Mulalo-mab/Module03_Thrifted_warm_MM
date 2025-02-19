@@ -28,6 +28,9 @@ app.use("/users", usersRouter)
 app.use("/productcategories", productsCategoriesRouter)
 app.use("/products", productsRouter)
 
+app.use("/",()=>{
+    console.log("Welcome to momos back end")
+})
 //creating a port 
 const PORT = 5050
 app.listen(PORT, ()=>{

@@ -1,58 +1,89 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
 
-export default createStore({
+const store = createStore({
   state: {
-    All_Products: null,
-    cart: JSON.parse(localStorage.getItem("cart")) || [], // Load cart from localStorage
+    products: null,
+    cart: [], // Cart state, will hold items added to the cart
+    cartTotal: 0,
+  },
+  getters: {
+    allProducts: (state) => state.products,
+    cartItems: (state) => state.cart,
+    cartTotal: (state) => state.cartTotal,
   },
   mutations: {
-    setAll_Products(state, payload) {
-      state.All_Products = payload;
+    SET_PRODUCTS(state, products) {
+      state.products = products;
     },
-    ADD_TO_CART(state, item) {
-      state.cart.push(item);
-      localStorage.setItem("cart", JSON.stringify(state.cart)); // Save cart to localStorage
+    ADD_TO_CART(state, product) {
+      const existingItem = state.cart.find(
+        (item) => item.product_id === product.product_id
+      );
+      if (existingItem) {
+        existingItem.quantity += product.quantity;
+      } else {
+        state.cart.push({ ...product, quantity: product.quantity });
+      }
     },
-    REMOVE_FROM_CART(state, productId) {
-      state.cart = state.cart.filter(item => item.id !== productId);
-      localStorage.setItem("cart", JSON.stringify(state.cart)); // Update localStorage after removing item
+    SET_CART_ITEMS(state, cartItems) {
+      state.cart = cartItems;
+    },
+    SET_CART_TOTAL(state, total) {
+      state.cartTotal = total;
     },
   },
   actions: {
-    async getData({ commit }) {
+    async fetchProducts({ commit }) {
       try {
         const response = await fetch('http://localhost:5050/products');
-        const { All_Products } = await response.json();
-
-        const updatedProducts = All_Products.map(product => {
-          let baseUrl = 'https://raw.githubusercontent.com/awonkenkibi/images/main/';
-          if (product.category_name === 'Women') {
-            baseUrl += 'WomenProducts/';
-          } else if (product.category_name === 'Men') {
-            baseUrl += 'MenProducts/';
-          } else if (product.category_name === 'Kids') {
-            baseUrl += 'KidsProducts/';
-          } else {
-            baseUrl += 'OtherProducts/';
-          }
-
-          return {
-            ...product,
-            image_url: `${baseUrl}${product.image_url.split('/').pop()}`
-          };
-        });
-
-        commit('setAll_Products', updatedProducts);
-
+        const data = await response.json();
+        commit('SET_PRODUCTS', data.All_Products);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Failed to fetch products:', error);
       }
     },
-    addToCart({ commit }, item) {
-      commit("ADD_TO_CART", item);
+    async addToCart({ commit }, { user_id, product_id, quantity }) {
+      try {
+          const response = await fetch('http://localhost:5050/cart/add', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  user_id, // Make sure user_id is included here
+                  product_id,
+                  quantity,
+              }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+              commit('SET_CART_ITEMS', data.cart_items);  // Update cart items in Vuex
+          } else {
+              console.error('Failed to add product to cart:', data.error);
+          }
+      } catch (error) {
+          console.error('Failed to add product to cart:', error);
+      }
+  },
+    async fetchCartItems({ commit }) {
+      try {
+        const response = await fetch('http://localhost:5050/cart');
+        const data = await response.json();
+        commit('SET_CART_ITEMS', data.cart_items);
+      } catch (error) {
+        console.error('Failed to fetch cart items:', error);
+      }
     },
-    removeFromCart({ commit }, productId) {
-      commit("REMOVE_FROM_CART", productId);
+    async fetchCartTotal({ commit }) {
+      try {
+        const response = await fetch('http://localhost:5050/cart/total');
+        const data = await response.json();
+        commit('SET_CART_TOTAL', data.total_price);
+      } catch (error) {
+        console.error('Failed to fetch cart total:', error);
+      }
     },
-  }
+  },
 });
+
+export default store;

@@ -1,4 +1,12 @@
 <template>
+    <nav class="navbar navbar-dark bg-brown">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation" @click="toggleMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="#">Thrifted Warmth</a>
+    </div>
+  </nav>
   <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="dark" v-bind:class="{ show: menuVisible }">
     <div align="center" class="bg-brown p-4">
       <h5 class="text-body-emphasis h4"></h5>
@@ -11,19 +19,11 @@
       <br>
       <router-link to="/login" class="nav-link" @click="hideMenu">Login</router-link>
       <br>
-      <router-link to="/"></router-link>
+
       </div>
      
     </div>
   </div>
-  <nav class="navbar navbar-dark bg-brown">
-    <div class="container-fluid">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation" @click="toggleMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <a class="navbar-brand" href="#">Thrifted Warmth</a>
-    </div>
-  </nav>
 </template>
 
 <script>

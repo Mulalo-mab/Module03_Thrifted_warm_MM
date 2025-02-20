@@ -18,20 +18,20 @@
 </template>
   
 <script>
-export default {
-  computed: {
-    cartItems() {
-      return this.$store.state.cart; // Access cart from Vuex
+  export default {
+    name: "CartView",
+    computed: {
+      cartItems() {
+        return this.$store.state.cart;
+      },
+      cartTotal() {
+        return this.$store.state.cartTotal;
+      },
     },
-    totalPrice() {
-      return this.cartItems.reduce((total, item) => total + item.price, 0);
-    }
-  },
-  methods: {
-    removeFromCart(productId) {
-      this.$store.dispatch('removeFromCart', productId); // Dispatch remove action
-    }
-  }
-};
+    mounted() {
+      this.$store.dispatch("fetchCartItems");
+      this.$store.dispatch("fetchCartTotal");
+    },
+  };
 </script>
   

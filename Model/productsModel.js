@@ -1,13 +1,15 @@
 import {pool} from "../config/config.js"
 
-const getAllProducts = async () => {
-    let [data] = await pool.query(`
-      SELECT p.product_id, p.name AS product_name, p.description, p.size, p.color, p.price, p.stock, p.image_url, c.category_name
+const getAllProducts = async (limit = 10, offset = 0) => {
+  const [data] = await pool.query(`
+      SELECT p.product_id, p.name AS product_name, p.description, 
+             p.size, p.color, p.price, p.stock, p.image_url, 
+             c.category_name
       FROM Products p
       INNER JOIN Product_Categories c ON p.category_id = c.category_id
-    `);
-    return data;
-  };
+      LIMIT ? OFFSET ?`, [limit, offset]);
+  return data;
+};
 
 const getSingleProduct = async (product_id) => {
     let [data] = await pool.query(`

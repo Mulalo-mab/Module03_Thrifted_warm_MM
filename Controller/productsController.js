@@ -7,10 +7,13 @@ import{
 } from "../Model/productsModel.js"
 
 const getAllProductsCon = async (req, res) => {
-    res.json({
-      All_Products: await getAllProducts(),
-    });
-}
+  try {
+      const products = await getAllProducts();
+      res.json({ All_Products: products });
+  } catch (error) {
+      res.status(500).json({ error: "Failed to fetch products" });
+  }
+};
 
 const getSingleProductCon = async (req, res) => {
     res.json({

@@ -1,11 +1,11 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProductsView from '../views/ProductsView.vue'
-import CartView from '../views/CartView.vue'
 import LoginView from '@/views/LoginView.vue'
 import register from '@/components/register.vue'
 import AboutView from '@/views/AboutView.vue'
 import ProductDetails from '../components/ProductDetails.vue'
+import CartView from '../views/CartView.vue'
 
 const routes = [
   {
@@ -29,14 +29,14 @@ const routes = [
     component: ProductsView
   },
   {
-    path: '/cart',
-    name: 'cart',
-    component: CartView
-  },
-  {
     path: '/about',
     name: 'about',
     component: AboutView
+  },
+  {
+    path: '/cart',
+    name: 'cart',
+    component: CartView
   },
   {
     path: "/product/:id",

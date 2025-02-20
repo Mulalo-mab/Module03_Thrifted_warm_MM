@@ -122,7 +122,7 @@ export default {
   background-image: url("../assets/background01.jpg");
   background-size: repeat;
   background-position: center;
-  filter: blur(3px); /* Adjust the blur level */
+  filter: blur(3px);
   z-index: -1; /* Ensure the content is above the blurred background */
 }
 

@@ -48,6 +48,7 @@ export default {
     removeFromCart(productId) {
       this.$store.dispatch('removeFromCart', productId); // Dispatch remove action
     }
+    
   }
 };
 </script>

@@ -33,5 +33,21 @@
       this.$store.dispatch("fetchCartTotal");
     },
   };
+export default {
+  computed: {
+    cartItems() {
+      return this.$store.state.cart; // Access cart from Vuex
+    },
+    totalPrice() {
+      return this.cartItems.reduce((total, item) => total + item.price, 0);
+    }
+  },
+  methods: {
+    removeFromCart(productId) {
+      this.$store.dispatch('removeFromCart', productId); // Dispatch remove action
+    }
+    
+  }
+};
 </script>
   

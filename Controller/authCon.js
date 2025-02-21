@@ -16,7 +16,7 @@ const login = async (req, res) => {
     if (!users) return res.status(401).json({ error: "Invalid credentials" });
     const isMatch = await bcrypt.compare(password, users.password);
     if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
-    res.json({message:'Yay!!! you logged in'})
+    res.json({user_id:users.user_id})
 }
 
 export { registerCon, login };

@@ -7,18 +7,15 @@
           <label for="email" class="form-label">Email:</label>
           <input type="email" class="form-control" id="email" v-model="formData.email" placeholder="john.doe@example.com" required />
         </div>
-
         <div class="mb-3">
           <label for="password" class="form-label">Password:</label>
           <input type="password" class="form-control" id="password" v-model="formData.password" placeholder="password" required />
         </div>
-
         <div class="text-center">
           <button type="submit" class="btn btn-primary w-100">Login</button>
         </div>
-
         <div class="mt-3 text-center">
-          <p>Don't have an account? 
+          <p>Don't have an account?
             <button @click="goToRegister" class="btn btn-link p-0">Register</button>
           </p>
         </div>
@@ -26,11 +23,8 @@
     </div>
   </div>
 </template>
-
-
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
@@ -46,18 +40,14 @@ export default {
     async handleLogin() {
       this.loading = true;
       this.errorMessage = "";
-      
       try {
         const response = await axios.post("http://localhost:5050/api/auth/login", this.formData);
-        
-        if (response.data) {  
-          alert("Login successful!");
-          
+        if (response.data) {
+          alert("Login successful!");  // Make a modal
           // Store user data if needed
-          localStorage.setItem("user", JSON.stringify(response.data));
-
+          localStorage.setItem("user_id", JSON.stringify(response.data.user_id));
           // Redirect to home page
-          this.$router.push({ name: "home" });
+          this.$router.push({ name: "cart" });
         }
       } catch (error) {
         alert(this.errorMessage = error.response?.data?.error || "Login failed. Please try again.");

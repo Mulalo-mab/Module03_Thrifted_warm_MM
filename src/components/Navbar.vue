@@ -19,6 +19,9 @@
       <br>
       <router-link to="/login" class="nav-link" @click="hideMenu">Login</router-link>
       <br>
+      <router-link to="/cart" class="nav-link" @click="hideMenu">cart</router-link>
+
+      <br>
 
       </div>
      

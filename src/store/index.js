@@ -1,89 +1,195 @@
-import { createStore } from 'vuex';
+import { createStore } from "vuex";
 
-const store = createStore({
+export default createStore({
   state: {
-    products: null,
-    cart: [], // Cart state, will hold items added to the cart
+    All_Products: null,
+    Single_Product: null,
+    cart: [],
     cartTotal: 0,
-  },
-  getters: {
-    allProducts: (state) => state.products,
-    cartItems: (state) => state.cart,
-    cartTotal: (state) => state.cartTotal,
+    user_id: null, // Assuming a user ID is needed, adjust as needed
   },
   mutations: {
-    SET_PRODUCTS(state, products) {
-      state.products = products;
+    // items / products
+    setAll_Products(state, payload) {
+      state.All_Products = payload;
     },
-    ADD_TO_CART(state, product) {
-      const existingItem = state.cart.find(
-        (item) => item.product_id === product.product_id
-      );
-      if (existingItem) {
-        existingItem.quantity += product.quantity;
-      } else {
-        state.cart.push({ ...product, quantity: product.quantity });
-      }
+    setSingle_Product(state, payload) {
+      state.Single_Product = payload;
     },
+    // cart
     SET_CART_ITEMS(state, cartItems) {
       state.cart = cartItems;
     },
     SET_CART_TOTAL(state, total) {
       state.cartTotal = total;
     },
+    REMOVE_ITEM_FROM_CART(state, productId) {
+      state.cart = state.cart.filter(item => item.product_id !== productId);
+    },
+    UPDATE_ITEM_QUANTITY(state, { productId, newQuantity }) {
+      const item = state.cart.find(item => item.product_id === productId);
+      if (item) {
+        item.quantity = newQuantity;
+      }
+    },
   },
   actions: {
-    async fetchProducts({ commit }) {
+    async getData({ commit }) {
       try {
-        const response = await fetch('http://localhost:5050/products');
-        const data = await response.json();
-        commit('SET_PRODUCTS', data.All_Products);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      }
-    },
-    async addToCart({ commit }, { user_id, product_id, quantity }) {
-      try {
-          const response = await fetch('http://localhost:5050/cart/add', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                  user_id, // Make sure user_id is included here
-                  product_id,
-                  quantity,
-              }),
-          });
-          const data = await response.json();
-          if (response.ok) {
-              commit('SET_CART_ITEMS', data.cart_items);  // Update cart items in Vuex
+        const response = await fetch("http://localhost:5050/products");
+        const { All_Products } = await response.json();
+        const updatedProducts = All_Products.map((product) => {
+          let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
+          if (product.category_name === "Women") {
+            baseUrl += "WomenProducts/";
+          } else if (product.category_name === "Men") {
+            baseUrl += "MenProducts/";
+          } else if (product.category_name === "Kids") {
+            baseUrl += "KidsProducts/";
           } else {
-              console.error('Failed to add product to cart:', data.error);
+            baseUrl += "OtherProducts/";
           }
+          return {
+            ...product,
+            image_url: `${baseUrl}${product.image_url.split("/").pop()}`,
+          };
+        });
+        commit("setAll_Products", updatedProducts);
       } catch (error) {
-          console.error('Failed to add product to cart:', error);
-      }
-  },
-    async fetchCartItems({ commit }) {
-      try {
-        const response = await fetch('http://localhost:5050/cart');
-        const data = await response.json();
-        commit('SET_CART_ITEMS', data.cart_items);
-      } catch (error) {
-        console.error('Failed to fetch cart items:', error);
+        console.error("Error fetching products:", error);
       }
     },
-    async fetchCartTotal({ commit }) {
+    async getSingleProduct({ commit }, product_id) {
       try {
-        const response = await fetch('http://localhost:5050/cart/total');
-        const data = await response.json();
-        commit('SET_CART_TOTAL', data.total_price);
+        const response = await fetch(`http://localhost:5050/products/${product_id}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const { single_product } = await response.json();
+        console.log("API Response:", single_product);
+        let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
+        if (single_product.category_name === "Women") {
+          baseUrl += "WomenProducts/";
+        } else if (single_product.category_name === "Men") {
+          baseUrl += "MenProducts/";
+        } else if (single_product.category_name === "Kids") {
+          baseUrl += "KidsProducts/";
+        } else {
+          baseUrl += "OtherProducts/";
+        }
+        single_product.image_url = `${baseUrl}${single_product.image_url.split("/").pop()}`;
+        commit("setSingle_Product", single_product);
       } catch (error) {
-        console.error('Failed to fetch cart total:', error);
+        console.error("Error fetching single product:", error);
+      }
+    },
+    async fetchCart({ commit, state, dispatch }) {
+      try {
+        // Ensure that the products are loaded before fetching the cart
+        if (!state.All_Products) {
+          await dispatch("getData");
+        }
+    
+        const response = await fetch(`http://localhost:5050/cart/${state.user_id}`);
+        if (!response.ok) throw new Error("Error fetching cart");
+        const cartData = await response.json();
+    
+        // Add image URLs for each cart item
+        const updatedCart = cartData.map((item) => {
+          let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
+          const product = state.All_Products.find(product => product.product_id === item.product_id);
+          if (product) {
+            if (product.category_name === "Women") {
+              baseUrl += "WomenProducts/";
+            } else if (product.category_name === "Men") {
+              baseUrl += "MenProducts/";
+            } else if (product.category_name === "Kids") {
+              baseUrl += "KidsProducts/";
+            } else {
+              baseUrl += "OtherProducts/";
+            }
+            item.image_url = `${baseUrl}${product.image_url.split("/").pop()}`;
+          }
+          return item;
+        });
+    
+        commit("SET_CART_ITEMS", updatedCart);
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }
+    },
+    async fetchCartTotal({ commit, state }) {
+      try {
+        const response = await fetch(`http://localhost:5050/cart/total/${state.user_id}`);
+        if (!response.ok) throw new Error("Error fetching cart total");
+        const { total } = await response.json();
+        commit("SET_CART_TOTAL", total);
+      } catch (error) {
+        console.error("Error fetching cart total:", error);
+      }
+    },
+
+    //dispatch this on the add tp button to add to cart
+    async addToCart({ dispatch, state }, { product_id, quantity, size }) {
+      try {
+        const response = await fetch("http://localhost:5050/cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: state.user_id,
+            product_id,
+            quantity,
+            size,  // Ensure size is included
+          }),
+        });
+        if (!response.ok) throw new Error("Error adding item to cart");
+        await dispatch("fetchCart"); // Refresh cart after adding
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+      }
+    },
+    async updateCartItem({ dispatch }, { cart_id, quantity, size }) {
+      if (!cart_id) {
+        console.error("cart_id is required but is missing");
+        return;
+      }
+      try {
+        const response = await fetch("http://localhost:5050/cart", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ cart_id, quantity, size }),
+        });
+        if (!response.ok) throw new Error("Error updating cart item");
+        await dispatch("fetchCart"); // Refresh cart after update
+      } catch (error) {
+        console.error("Error updating cart item:", error);
+      }
+    },
+    async removeFromCart({ dispatch }, cart_id) {
+      try {
+        const response = await fetch(`http://localhost:5050/cart/${cart_id}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) throw new Error("Error removing item from cart");
+        await dispatch("fetchCart"); // Refresh cart after removal
+      } catch (error) {
+        console.error("Error removing from cart:", error);
+      }
+    },
+    async clearCart({ dispatch, state }) {
+      try {
+        const response = await fetch(`http://localhost:5050/cart/drop/${state.user_id}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) throw new Error("Error clearing cart");
+        await dispatch("fetchCart"); // Refresh cart after clearing
+      } catch (error) {
+        console.error("Error clearing cart:", error);
       }
     },
   },
 });
-
-export default store;

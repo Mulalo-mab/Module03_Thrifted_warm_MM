@@ -1,11 +1,21 @@
+// routes/cartRouter.js
 import express from "express";
-import { getCartItemsCon, addToCartCon, removeFromCartCon, getCartTotalCon, increaseQuantityCon } from "../Controller/cartController.js";
-
+import {
+    getCartCon,
+    addToCartCon,
+    updateCartItemCon,
+    deleteItemCon,
+    dropCartCon,
+    getCartTotalCon
+  } from "../controller/cartController.js";  // Ensure the correct path and file name here
+  
 const router = express.Router();
-router.get("/", getCartItemsCon);
-router.post("/add", addToCartCon);
-router.post("/remove", removeFromCartCon);
-router.get("/total", getCartTotalCon);
-router.patch('/increase', increaseQuantityCon); 
+
+router.get("/:user_id", getCartCon);
+router.post("/", addToCartCon);
+router.patch("/", updateCartItemCon);  // Use PATCH for updating size and quantity
+router.delete("/:cart_id", deleteItemCon);
+router.delete("/drop/:user_id", dropCartCon);
+router.get("/total/:user_id", getCartTotalCon);
 
 export default router;

@@ -1,58 +1,44 @@
-import { 
-    getCartItems, 
-    addToCart, 
-    removeFromCart, 
-    getCartTotal, 
-    increaseQuantity 
-} from "../Model/cartModel.js";
+// controllers/cartController.js
+import { getCart, addToCart, deleteItem, dropCart, getCartTotal, updateCartItem  } from "../model/cartModel.js";
 
-export const getCartItemsCon = async (req, res) => {
-    try {
-        const user_id = req.query.user_id;
-        const items = await getCartItems(user_id);
-        res.json({ cart_items: items });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch cart items" });
-    }
+const getCartCon = async (req, res) => {
+  const user_id = req.params.user_id;
+  res.json(await getCart(user_id));
 };
 
-export const addToCartCon = async (req, res) => {
-    try {
-        const { user_id, product_id, quantity } = req.body;
-        await addToCart(user_id, product_id, quantity);
-        res.status(201).json({ message: "Product added to cart" });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to add product to cart" });
-    }
+const addToCartCon = async (req, res) => {
+  const { user_id, product_id, quantity } = req.body;
+  res.json(await addToCart(user_id, product_id, quantity));
 };
 
-export const removeFromCartCon = async (req, res) => {
-    try {
-        const { user_id, product_id } = req.body;
-        await removeFromCart(user_id, product_id);
-        res.status(200).json({ message: "Product removed from cart" });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to remove product from cart" });
+const deleteItemCon = async (req, res) => {
+    const cart_id = req.params.cart_id;
+    if (!cart_id || isNaN(cart_id)) {
+      return res.status(400).json({ error: "Invalid or missing cart_id" });
     }
+    await deleteItem(cart_id);
+    res.json({ message: "Item deleted successfully." });
+  };
+  
+  
+
+const dropCartCon = async (req, res) => {
+  await dropCart(req.params.user_id);
+  res.json({ message: "Cart dropped successfully." });
 };
 
-export const getCartTotalCon = async (req, res) => {
-    try {
-        const user_id = req.query.user_id;
-        const total = await getCartTotal(user_id);
-        res.json({ total_price: total });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to calculate cart total" });
-    }
-};
+// Get Cart Total Controller
+const getCartTotalCon = async (req, res) => {
+    const user_id = req.params.user_id;
+    const total = await getCartTotal(user_id);
+    res.json({ total });
+  };
 
-// New Controller: Increase Quantity
-export const increaseQuantityCon = async (req, res) => {
-    try {
-        const { user_id, product_id, quantity } = req.body;
-        await increaseQuantity(user_id, product_id, quantity);
-        res.status(200).json({ message: "Quantity increased successfully" });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to increase quantity" });
-    }
-};
+// Update Quantity and Size Controller
+const updateCartItemCon = async (req, res) => {
+    const { cart_id, quantity, size } = req.body;
+    await updateCartItem(cart_id, quantity, size);
+    res.json({ message: "Cart item updated successfully." });
+  };  
+
+export { getCartCon, addToCartCon, deleteItemCon, dropCartCon, getCartTotalCon, updateCartItemCon };

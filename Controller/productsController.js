@@ -1,32 +1,38 @@
-import{
-    getAllProducts,
-    getSingleProduct,
-    insertProduct,
-    updateProduct,
-    deleteProduct
-} from "../Model/productsModel.js"
+import {
+  getAllProducts,
+  getSingleProduct,
+  insertProduct,
+  updateProduct,
+  deleteProduct
+} from "../Model/productsModel.js";
 
 const getAllProductsCon = async (req, res) => {
   try {
-      const products = await getAllProducts();
-      res.json({ All_Products: products });
+    const products = await getAllProducts();
+    res.json({ All_Products: products });
   } catch (error) {
-      res.status(500).json({ error: "Failed to fetch products" });
+    res.status(500).json({ error: "Failed to fetch products" });
   }
 };
 
 const getSingleProductCon = async (req, res) => {
-    res.json({
-      single_product: await getSingleProduct(req.params.product_id),
-    });
-}
+  try {
+    const product = await getSingleProduct(req.params.product_id);
+    res.json({ single_product: product });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch product" });
+  }
+};
 
 const insertProductCon = async (req, res) => {
-    const { category_id, name, description, size, color, price, stock, image_url } = req.body;
-    res.json({
-      new_product: await insertProduct(category_id, name, description, size, color, price, stock, image_url),
-    });
-}
+  const { category_id, name, description, color, price, stock, image_url } = req.body;
+  try {
+    const result = await insertProduct(category_id, name, description, color, price, stock, image_url);
+    res.json({ message: result });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to insert product" });
+  }
+};
 
 const updateProductCon = async (req, res) => {
   try {
@@ -37,12 +43,13 @@ const updateProductCon = async (req, res) => {
   }
 };
 
+const deleteProductCon = async (req, res) => {
+  try {
+    const result = await deleteProduct(req.params.product_id);
+    res.json({ message: result });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete product" });
+  }
+};
 
-const deleteProductCon =  async (req, res) => {
-    res.json({
-      deleted_product: await deleteProduct(req.params.product_id),
-    });
-}
-
-
-export {getAllProductsCon, getSingleProductCon, insertProductCon, updateProductCon, deleteProductCon}
+export { getAllProductsCon, getSingleProductCon, insertProductCon, updateProductCon, deleteProductCon };

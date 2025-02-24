@@ -31,7 +31,6 @@ app.use("/productcategories", productsCategoriesRouter)
 app.use("/products", productsRouter)
 app.use("/cart", cartRouter); // Cart routes
 
-
 //creating a port 
 const PORT = 5050
 app.listen(PORT, ()=>{

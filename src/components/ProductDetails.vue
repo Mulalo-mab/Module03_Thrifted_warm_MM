@@ -21,7 +21,8 @@
         <!-- Size Selection -->
         <div class="mb-3">
           <label for="size" class="form-label">Select Size</label>
-          <select v-model="selectedSize" class="form-select" id="size">
+          <select v-model="selectedSize" class="form-select" id="size" required>
+            <option value="">Choose Size</option>
             <option value="S">S</option>
             <option value="M">M</option>
             <option value="L">L</option>
@@ -29,6 +30,7 @@
             <option value="XXL">XXL</option>
             <option v-for="(size, index) in product.sizes" :key="index" :value="size">{{ size }}</option>
           </select>
+          <span v-if="errors.size" class="text-danger">{{ errors.size }}</span>
         </div>
 
         <!-- Quantity Selection -->
@@ -40,7 +42,9 @@
             min="1"
             class="form-control"
             id="quantity"
+            required
           />
+          <span v-if="errors.quantity" class="text-danger">{{ errors.quantity }}</span>
         </div>
 
         <!-- Add to Cart Button -->
@@ -88,8 +92,10 @@
     </div>
   </div>
 </template>
+
 <script>
 import Cart from "../components/Cart.vue";
+
 export default {
   components: {
     Cart,
@@ -102,40 +108,49 @@ export default {
   },
   data() {
     return {
-      cart:[],
+      cart: [],
       selectedSize: "", // Selected size
       quantity: 1, // Default quantity
       showRegistrationModal: false, // Modal visibility
+      errors: {
+        size: "",
+        quantity: "",
+      },
     };
   },
   methods: {
+    validateForm() {
+      this.errors.size = this.selectedSize ? "" : "Please select a size.";
+      this.errors.quantity = this.quantity > 0 ? "" : "Please enter a valid quantity.";
+      return !this.errors.size && !this.errors.quantity;
+    },
     checkRegistration() {
-      const user_id = localStorage.getItem('user_id'); // Assume user ID is stored after login
+      const user_id = localStorage.getItem("user_id");
       if (!user_id) {
-        this.$router.push({ name: 'login' });
+        this.$router.push({ name: "login" });
       } else {
-        this.addToCart(this.product.product_id, this.quantity, this.selectedSize);
+        if (this.validateForm()) {
+          this.addToCart();
+        }
       }
-      },
-      addToCart() {
-        const user_id = localStorage.getItem('user_id'); // Ensure user ID is stored after login
-        const productToAdd = {
+    },
+    addToCart() {
+      const user_id = localStorage.getItem("user_id");
+      const productToAdd = {
         user_id: user_id,
         product_id: this.product.product_id,
         quantity: this.quantity,
-        size: this.selectedSize
-  };
-  this.$store.dispatch('addToCart', productToAdd).then(() => {
-  }).catch((error) => {
-    console.error('Failed to add product to cart:', error);
-  });
-},
-created() {
-  const savedCart = JSON.parse(localStorage.getItem('cart'));
-  if (savedCart) {
-    this.$store.commit('SET_CART_ITEMS', savedCart);
-  }
-},
+        size: this.selectedSize,
+      };
+      this.$store
+        .dispatch("addToCart", productToAdd)
+        .then(() => {
+          console.log("Product added to cart successfully.");
+        })
+        .catch((error) => {
+          console.error("Failed to add product to cart:", error);
+        });
+    },
     closeModal() {
       this.showRegistrationModal = false;
     },
@@ -144,7 +159,7 @@ created() {
       this.$router.push("/login");
     },
     goBackToProducts() {
-      this.$router.push("/products"); // Use path instead of name
+      this.$router.push("/products");
     },
   },
   mounted() {
@@ -157,13 +172,14 @@ created() {
         this.product.sizes = [];
       }
     }
-
     if (this.product.sizes && this.product.sizes.length > 0) {
       this.selectedSize = this.product.sizes[0];
     }
   },
 };
 </script>
+
+
 <style scoped>
 .img-fluid {
   max-width: 100%;
@@ -181,6 +197,10 @@ created() {
   border-color: #545b62;
 }
 
+.text-danger {
+  font-size: 0.875em;
+  color: red;
+}
 .modal-dialog {
   max-width: 500px;
   margin: 100px auto;
@@ -189,9 +209,5 @@ created() {
 .modal-content {
   border-radius: 8px;
   overflow: hidden;
-}
-
-.modal-backdrop {
-  background: rgba(0, 0, 0, 0.5);
 }
 </style>

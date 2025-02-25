@@ -1,5 +1,6 @@
 <template>
   <div class="home section">
+    <login-prompt-modal ref="loginModal" />
     <!-- Hero Section -->
     <section class="hero text-white d-flex align-items-center">
       <img :src="logo" class="logo" alt="">
@@ -61,7 +62,13 @@
 </template>
 
 <script>
+import LoginPromptModal from '@/components/LoginPromptModal.vue';
+
 export default {
+  components:{
+    LoginPromptModal,
+
+  },
   data() {
     return {
       heroImages: [
@@ -82,6 +89,19 @@ export default {
       ]
     };
   },
+  methods:{
+    handleShopNow() {
+      if (this.isLoggedIn()) {
+        this.$router.push("/products");
+      } else {
+        this.$refs.loginModal.show();
+      }
+    },
+    isLoggedIn() {
+      // Check if the user is logged in (You might want to use Vuex or localStorage)
+      return !!localStorage.getItem("userToken");
+    }
+  }
 };
 </script>
 

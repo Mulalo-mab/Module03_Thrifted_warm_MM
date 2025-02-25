@@ -12,7 +12,9 @@
           <input type="password" class="form-control" id="password" v-model="formData.password" placeholder="password" required />
         </div>
         <div class="text-center">
-          <button type="submit" class="btn btn-primary w-100">Login</button>
+          <button type="submit" class="btn btn-primary w-100" :disabled="loading">
+            {{ loading ? "Logging in..." : "Login" }}
+          </button>
         </div>
         <div class="mt-3 text-center">
           <p>Don't have an account?
@@ -23,6 +25,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 export default {
@@ -42,12 +45,17 @@ export default {
       this.errorMessage = "";
       try {
         const response = await axios.post("http://localhost:5050/api/auth/login", this.formData);
-        if (response.data) {
-          alert("Login successful!");  // Make a modal
-          // Store user data if needed
-          localStorage.setItem("user_id", JSON.stringify(response.data.user_id));
-          // Redirect to home page
-          this.$router.push({ name: "cart" });
+        if (response.data && response.data.user_id) {
+          alert("Login successful!");
+
+          // Store user ID in Vuex and localStorage
+          this.$store.dispatch("setUserId", response.data.user_id);
+          
+          // Fetch user's cart after login
+          await this.$store.dispatch("fetchCart");
+
+          // Redirect to the products page
+          this.$router.push({ name: "products" });
         }
       } catch (error) {
         alert(this.errorMessage = error.response?.data?.error || "Login failed. Please try again.");

@@ -11,7 +11,7 @@ export default {
   name: "Cart",
   computed: {
     cartCount() {
-      return this.$store.state.cart.reduce((total, item) => total + item.quantity, 0);
+      return this.$store.state.cart.reduce((total, item) => total + Number(item.quantity), 0);
     },
   },
 };

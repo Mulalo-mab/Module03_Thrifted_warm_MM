@@ -6,7 +6,7 @@ export default createStore({
     Single_Product: null,
     cart: [],
     cartTotal: 0,
-    user_id: null, // Assuming a user ID is needed, adjust as needed
+    user_id: localStorage.getItem("user_id")||null, // Assuming a user ID is needed, adjust as needed
   },
   mutations: {
     // items / products
@@ -26,11 +26,19 @@ export default createStore({
     REMOVE_ITEM_FROM_CART(state, productId) {
       state.cart = state.cart.filter(item => item.product_id !== productId);
     },
-    UPDATE_ITEM_QUANTITY(state, { productId, newQuantity }) {
-      const item = state.cart.find(item => item.product_id === productId);
+    UPDATE_ITEM_QUANTITY(state, { cart_id, newQuantity }) {
+      const item = state.cart.find(item => item.cart_id === cart_id);
       if (item) {
         item.quantity = newQuantity;
       }
+    },
+    SET_USER_ID(state, user_id){
+      state.user_id = user_id;
+      localStorage.setItem("user_id", user_id); // Store in localStorage
+    },
+    CLEAR_USER_ID(state) {
+      state.user_id = null;
+      localStorage.removeItem("user_id"); // Clear from localStorage
     },
   },
   actions: {
@@ -93,7 +101,7 @@ export default createStore({
         const response = await fetch(`http://localhost:5050/cart/${state.user_id}`);
         if (!response.ok) throw new Error("Error fetching cart");
         const cartData = await response.json();
-    
+
         // Add image URLs for each cart item
         const updatedCart = cartData.map((item) => {
           let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
@@ -132,6 +140,12 @@ export default createStore({
     //dispatch this on the add tp button to add to cart
     async addToCart({ dispatch, state }, { product_id, quantity, size }) {
       try {
+        // Store user_id in localStorage if not already stored
+        if (!state.user_id) {
+          console.error("User ID is required but not found in state.");
+          return;
+        }
+
         const response = await fetch("http://localhost:5050/cart", {
           method: "POST",
           headers: {
@@ -141,15 +155,16 @@ export default createStore({
             user_id: state.user_id,
             product_id,
             quantity,
-            size,  // Ensure size is included
+            size, // Ensure size is included
           }),
         });
         if (!response.ok) throw new Error("Error adding item to cart");
-        await dispatch("fetchCart"); // Refresh cart after adding
+        await dispatch("fetchCart");
       } catch (error) {
         console.error("Error adding to cart:", error);
       }
     },
+
     async updateCartItem({ dispatch }, { cart_id, quantity, size }) {
       if (!cart_id) {
         console.error("cart_id is required but is missing");
@@ -169,6 +184,7 @@ export default createStore({
         console.error("Error updating cart item:", error);
       }
     },
+
     async removeFromCart({ dispatch }, cart_id) {
       try {
         const response = await fetch(`http://localhost:5050/cart/${cart_id}`, {
@@ -180,6 +196,7 @@ export default createStore({
         console.error("Error removing from cart:", error);
       }
     },
+
     async clearCart({ dispatch, state }) {
       try {
         const response = await fetch(`http://localhost:5050/cart/drop/${state.user_id}`, {
@@ -190,6 +207,12 @@ export default createStore({
       } catch (error) {
         console.error("Error clearing cart:", error);
       }
+    },
+    setUserId({ commit }, user_id) {
+      commit("SET_USER_ID", user_id);
+    },
+      clearUserId({ commit }) {
+        commit("CLEAR_USER_ID");
     },
   },
 });

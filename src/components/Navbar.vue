@@ -8,7 +8,14 @@
               @click="toggleMenu">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <a class="navbar-brand" href="#">Thrifted Warmth</a>
+      <router-link to="/about" class="navbar-brand"> Thrifted Warmth</router-link>
+      <!-- Cart Icon at Corner -->
+      <router-link to="/cart" class="cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <transition name="slide-up">
+          <span class="cart-count" :key="cartCount">{{ cartCount }}</span>
+        </transition>
+      </router-link>
     </div>
   </nav>
   <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="dark" v-bind:class="{ show: menuVisible }">
@@ -23,11 +30,8 @@
         <br>
         <router-link to="/cart" class="nav-link" @click="hideMenu">Cart</router-link>
         <br>
-        <!-- Conditionally render Login or Logout -->
         <router-link v-if="!isAuthenticated" to="/login" class="nav-link" @click="hideMenu">Login</router-link>
-        <button v-else class="btn btn-link nav-link" @click="logout">
-          Logout
-        </button>
+        <button v-else class="btn btn-link nav-link" @click="logout">Logout</button>
       </div>
     </div>
   </div>
@@ -40,8 +44,13 @@ export default {
       isAuthenticated: false,
     };
   },
+  computed: {
+    cartCount() {
+      return this.$store.state.cart.reduce((total, item) => total + Number(item.quantity), 0);
+    },
+  },
   created() {
-    this.checkAuth(); // Check authentication when component loads
+    this.checkAuth();
   },
   methods: {
     toggleMenu() {
@@ -51,18 +60,17 @@ export default {
       this.menuVisible = false;
     },
     checkAuth() {
-      // Check if user is logged in by looking for user_id in localStorage
       this.isAuthenticated = !!localStorage.getItem("user_id");
     },
     logout() {
-      localStorage.removeItem("user_id"); // Remove user data
-      this.isAuthenticated = false; // Update authentication state
-      this.$router.push({ name: "login" }); // Redirect to login
+      localStorage.removeItem("user_id");
+      this.isAuthenticated = false;
+      this.$router.push({ name: "login" });
     }
   },
   watch: {
     "$route"() {
-      this.checkAuth(); // Re-check authentication when route changes
+      this.checkAuth();
     }
   }
 };
@@ -74,6 +82,12 @@ background-color: #8B4513 !important; /* Brown color */
 box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 padding: 1rem 2rem;
 transition: background-color 0.3s ease, transform 0.3s ease;
+position: fixed; /* Fixes the navbar at the top of the page */
+top: 0; /* Positions it at the top of the page */
+left: 0; /* Positions it at the left of the page */
+width: 100%; /* Ensures the navbar spans the full width of the page */
+padding: 10px 0; /* Adjust padding for your navbar */
+z-index: 1000; /* Ensures it stays above other content */
 }
 /* Navbar brand styles */
 .navbar-brand {
@@ -126,5 +140,39 @@ width: 50px;
 height: 50px;
 object-fit: cover;
 border-radius: 50%;
+}
+.cart-container {
+  position: relative;
+  display: inline-block;
+}
+.cart-icon {
+  position: relative;
+  font-size: 24px;
+  color: #333;
+  text-decoration: none;
+}
+.cart-count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #FF0000;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+.cart-count-enter-active {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+.cart-count-enter-to {
+  transform: translateY(0);
+  opacity: 1;
+}
+.cart-count-leave-active {
+  transform: translateY(10px);
+  opacity: 0;
 }
 </style>

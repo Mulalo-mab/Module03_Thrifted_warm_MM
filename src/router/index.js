@@ -7,6 +7,25 @@ import AboutView from '@/views/AboutView.vue'
 import ProductDetails from '../components/ProductDetails.vue'
 import CartView from '../views/CartView.vue'
 import CheckOutView from '@/views/CheckOutView.vue'
+import payment from '@/components/payment.vue'
+
+// Admin
+import AdminDashboardView from '@/views/AdminDashboardView.vue';
+import ProductManagementView from '@/views/ProductManagementView.vue';
+import OrderManagementView from '@/views/OrderManagementView.vue';
+import AdminLoginView from '@/views/AdminLoginView.vue';
+import AdminRegisterView from '@/views/AdminRegisterView.vue';
+
+
+
+function authGuard(to, from, next) {
+  const role = localStorage.getItem("role");
+  if (role === "admin") {
+    next();
+  } else {
+    next("/login"); // Redirect if not admin
+  }
+}
 
 const routes = [
   {
@@ -52,10 +71,45 @@ const routes = [
       product: JSON.parse(route.query.product),
     }),
   },
+  {
+    path: "/payment",
+    name: "payment",
+    component: payment
+  },
+  {
+    path: "/admin",
+    name: "Dashboard",
+    component: AdminDashboardView,
+    beforeEnter: authGuard // Protect admin routes
+  },
+  {
+    path: "/admin/products",
+    name: "Product",
+    component: ProductManagementView,
+    beforeEnter: authGuard // Protect admin routes
+  },
+  {
+    path: "/admin/orders",
+    name: "Orders", 
+    component: OrderManagementView,
+    beforeEnter: authGuard // Protect admin routes
+  },
+  {
+    path: "/admin/login",
+    name: "adminLogin",
+    component: AdminLoginView,
+  },
+  {
+    path: "/admin/register",
+    name: "adminRegister",
+    component: AdminRegisterView
+  }
+  
 ]
-
 const router = createRouter({
   history: createWebHashHistory(),
   routes
-})
+});
+
+
 export default router

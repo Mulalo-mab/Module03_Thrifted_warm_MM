@@ -16,6 +16,9 @@
             {{ loading ? "Logging in..." : "Login" }}
           </button>
         </div>
+        <div class="text-center">
+    <p>Admin? <button @click="goToAdminLogin" class="btn btn-link p-0">Login as Admin</button></p>
+  </div>
         <div class="mt-3 text-center">
           <p>Don't have an account?
             <button @click="goToRegister" class="btn btn-link p-0">Register</button>
@@ -25,7 +28,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 export default {
@@ -47,13 +49,10 @@ export default {
         const response = await axios.post("http://localhost:5050/api/auth/login", this.formData);
         if (response.data && response.data.user_id) {
           alert("Login successful!");
-
           // Store user ID in Vuex and localStorage
           this.$store.dispatch("setUserId", response.data.user_id);
-          
           // Fetch user's cart after login
           await this.$store.dispatch("fetchCart");
-
           // Redirect to the products page
           this.$router.push({ name: "products" });
         }
@@ -65,7 +64,10 @@ export default {
     },
     goToRegister() {
       this.$router.push({ name: "register" });
-    }
+    },
+    goToAdminLogin() {
+      this.$router.push("/admin/login");
+    },
   }
 };
 </script>

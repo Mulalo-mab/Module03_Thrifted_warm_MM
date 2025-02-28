@@ -1,5 +1,4 @@
 import { createStore } from "vuex";
-
 export default createStore({
   state: {
     All_Products: null,
@@ -7,6 +6,7 @@ export default createStore({
     cart: [],
     cartTotal: 0,
     user_id: localStorage.getItem("user_id")||null, // Assuming a user ID is needed, adjust as needed
+    role: localStorage.getItem("role") || null,
   },
   mutations: {
     // items / products
@@ -40,6 +40,18 @@ export default createStore({
       state.user_id = null;
       localStorage.removeItem("user_id"); // Clear from localStorage
     },
+    setUser(state, payload) {
+      state.user_id = payload.user_id;
+      state.role = payload.role;
+    },
+    logout(state) {
+      state.user_id = null;
+      state.role = null;
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("role");
+    }
+
+
   },
   actions: {
     async getData({ commit }) {
@@ -48,10 +60,10 @@ export default createStore({
         const { All_Products } = await response.json();
         const updatedProducts = All_Products.map((product) => {
           let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
-          if (product.category_name === "Women") {
-            baseUrl += "WomenProducts/";
-          } else if (product.category_name === "Men") {
+          if (product.category_name === "Men") {
             baseUrl += "MenProducts/";
+          } else if (product.category_name === "Women") {
+            baseUrl += "WomenProducts/";
           } else if (product.category_name === "Kids") {
             baseUrl += "KidsProducts/";
           } else {
@@ -97,11 +109,9 @@ export default createStore({
         if (!state.All_Products) {
           await dispatch("getData");
         }
-    
         const response = await fetch(`http://localhost:5050/cart/${state.user_id}`);
         if (!response.ok) throw new Error("Error fetching cart");
         const cartData = await response.json();
-
         // Add image URLs for each cart item
         const updatedCart = cartData.map((item) => {
           let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
@@ -120,7 +130,6 @@ export default createStore({
           }
           return item;
         });
-    
         commit("SET_CART_ITEMS", updatedCart);
       } catch (error) {
         console.error("Error fetching cart:", error);
@@ -136,7 +145,6 @@ export default createStore({
         console.error("Error fetching cart total:", error);
       }
     },
-
     //dispatch this on the add tp button to add to cart
     async addToCart({ dispatch, state }, { product_id, quantity, size }) {
       try {
@@ -145,7 +153,6 @@ export default createStore({
           console.error("User ID is required but not found in state.");
           return;
         }
-
         const response = await fetch("http://localhost:5050/cart", {
           method: "POST",
           headers: {
@@ -164,8 +171,7 @@ export default createStore({
         console.error("Error adding to cart:", error);
       }
     },
-
-    async updateCartItem({ dispatch }, { cart_id, quantity, size }) {
+    async updateCartItem({ dispatch }, { cart_id, quantity }) {
       if (!cart_id) {
         console.error("cart_id is required but is missing");
         return;
@@ -176,7 +182,7 @@ export default createStore({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ cart_id, quantity, size }),
+          body: JSON.stringify({ cart_id, quantity }), // Only sending cart_id and quantity
         });
         if (!response.ok) throw new Error("Error updating cart item");
         await dispatch("fetchCart"); // Refresh cart after update
@@ -184,7 +190,6 @@ export default createStore({
         console.error("Error updating cart item:", error);
       }
     },
-
     async removeFromCart({ dispatch }, cart_id) {
       try {
         const response = await fetch(`http://localhost:5050/cart/${cart_id}`, {
@@ -196,7 +201,6 @@ export default createStore({
         console.error("Error removing from cart:", error);
       }
     },
-
     async clearCart({ dispatch, state }) {
       try {
         const response = await fetch(`http://localhost:5050/cart/drop/${state.user_id}`, {
@@ -214,5 +218,13 @@ export default createStore({
       clearUserId({ commit }) {
         commit("CLEAR_USER_ID");
     },
+    setUser({ commit }, user) {
+      commit("setUser", user);
+    },
+    logout({ commit }) {
+      commit("logout");
+    },
+  
+  
   },
 });

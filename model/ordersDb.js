@@ -1,39 +1,110 @@
 import { pool } from "../config/config.js";
-
-const getAllOrders = async () => {
-  const [data] = await pool.query("SELECT * FROM orders");
-  return data;
+// Create order and move cart items to the orders table
+const createOrder = async (user_id, cartItems, total_price, shipping_details) => {
+  try {
+    // Create the order in the orders table
+    const [orderResult] = await pool.query(
+      `INSERT INTO orders (user_id, total_price, status) VALUES (?, ?, 'Pending')`,
+      [user_id, total_price]
+    );
+    const order_id = orderResult.insertId;
+    // Insert cart items into the orders table directly
+    const orderItemQueries = cartItems.map(item =>
+      pool.query(
+        `INSERT INTO orders (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`,
+        [order_id, item.product_id, item.quantity, item.price]
+      )
+    );
+    await Promise.all(orderItemQueries);
+    // Insert or update shipping details
+    await pool.query(
+      `INSERT INTO shipping (user_id, order_id, name, address, city, zipcode, country)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE name=VALUES(name), address=VALUES(address), city=VALUES(city), zipcode=VALUES(zipcode), country=VALUES(country)`,
+      [user_id, order_id, shipping_details.name, shipping_details.address, shipping_details.city, shipping_details.zipcode, shipping_details.country]
+    );
+    return { success: true, order_id };
+  } catch (error) {
+    throw error;
+  }
 };
-
-const getOrderById = async (order_id) => {
-  let [result] = await pool.query(`SELECT o.total_price, oi.quantity, oi.price, p.name, p.description, p.size, p.color, p.price, p.image_url, pc.category_name
-    FROM orders AS o
-    INNER JOIN order_items AS oi
-    ON o.order_id = oi.order_id
-    INNER JOIN products AS p
-    ON oi.product_id = p.product_id
-    INNER JOIN product_categories AS pc
-    ON p.category_id = pc.category_id
-    WHERE o.order_id = ?`, [order_id]);
-  return result;
+// Fetch user and order details for the checkout page
+const getUserCheckoutDetails = async (user_id) => {
+  try {
+    const [userDetails] = await pool.query(
+        `SELECT users.user_id, users.address AS user_address, users.name, users.email,
+                shipping.address AS shipping_address, shipping.city, shipping.zipcode, shipping.country
+         FROM users
+         LEFT JOIN shipping ON users.user_id = shipping.user_id
+         WHERE users.user_id = ?`,
+        [user_id]
+    );
+    // Get cart items for the user
+    const [cartItems] = await pool.query(
+        `SELECT c.product_id, c.quantity, p.price, p.image_url,
+                (c.quantity * p.price) AS total_price
+         FROM cart c
+         JOIN products p ON c.product_id = p.product_id
+         WHERE c.user_id = ?`,
+        [user_id]
+      );
+    return { userDetails: userDetails[0], cartItems };
+  } catch (error) {
+    throw error;
+  }
 };
-
-const insertOrder = async (user_id, total_price,status) => {
-  await pool.query ("INSERT INTO orders (user_id, total_price,status) VALUES(?, ?, ?)", [user_id, total_price,status])
-
-  return await getAllOrders();
-}
-
-const deleteOrder = async (order_id) => {
-  let [result] = await pool.query("DELETE FROM orders WHERE order_id = ?",[order_id])
-
-  return result;
-}
-
-const updateOrder =async (user_id, total_price, status, order_id) => {
-  pool.query("UPDATE orders SET user_id=? , total_price=?, status=? WHERE order_id = ?", [user_id, total_price, status, order_id])
-
-  return await getAllOrders()
-}
-
-export { getAllOrders, insertOrder, deleteOrder, updateOrder, getOrderById}
+export { createOrder, getUserCheckoutDetails };
+// Get all orders with their items
+export const adminGetOrders = async () => {
+  try {
+    const [orders] = await pool.query(`
+      SELECT
+        o.order_id,
+        o.user_id,
+        o.total_price,
+        o.status,
+        o.tracking_number,
+        o.carrier,
+        o.created_at,
+        u.name AS user_name,
+        u.email AS user_email
+      FROM orders o
+      LEFT JOIN users u ON o.user_id = u.user_id
+      ORDER BY o.created_at DESC;
+    `);
+    // Fetch items for each order
+    for (let order of orders) {
+      const [items] = await pool.query(`
+        SELECT
+          oi.product_id,
+          oi.quantity,
+          oi.price,
+          p.name AS product_name,
+          p.image_url
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.product_id
+        WHERE oi.order_id = ?;
+      `, [order.order_id]);
+      order.items = items;
+    }
+    return orders;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+// Update order tracking details
+export const AdminUpdateOrderTracking = async (orderId, trackingNumber, carrier, status) => {
+  try {
+    const query = `
+      UPDATE orders
+      SET tracking_number = ?, carrier = ?, status = ?
+      WHERE order_id = ?;
+    `;
+    const [result] = await pool.query(query, [trackingNumber, carrier, status, orderId]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

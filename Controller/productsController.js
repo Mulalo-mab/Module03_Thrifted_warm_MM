@@ -35,8 +35,16 @@ const insertProductCon = async (req, res) => {
 };
 
 const updateProductCon = async (req, res) => {
+  console.log("Received request to update product with ID:", req.params.product_id);
+  console.log("Request Body:", req.body);
+
   try {
     const updatedProduct = await updateProduct(req.params.product_id, req.body);
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
     res.status(200).json({ message: updatedProduct });
   } catch (error) {
     res.status(400).json({ error: error.message });

@@ -1,14 +1,23 @@
-import express from "express"
-import {getOrdersCon, insertOrderCon, deleteOrderCon, updateOrderCon, getOrderByIdCon} from "../controller/ordersCon.js"
-// import { getOrdersCon } from "../controller/ordersCon.js"
+import express from 'express';
+import {
+  createOrderCon,
+  getUserCheckoutDetailsCon,
+  adminGetAllOrdersCon,
+  adminUpdateOrderTrackingInfoCon
+} from '../controller/ordersCon.js';
+const router = express.Router();
+// Route to create an order
+router.post('/', createOrderCon);
+// Route to get all orders (Admin only)
+router.get("/", adminGetAllOrdersCon);
+// Route to update order tracking info (Admin only)
+router.patch('/:order_id', adminUpdateOrderTrackingInfoCon);
+// Route to get user checkout details
+router.get('/:user_id', getUserCheckoutDetailsCon);
+export default router;
 
-const router = express.Router()
-
-router.get("/", getOrdersCon)
-router.get("/:order_id", getOrderByIdCon)
-router.post("/", insertOrderCon)
-router.delete("/:order_id", deleteOrderCon)
-router.put("/:order_id", updateOrderCon)
 
 
-export default router
+
+
+

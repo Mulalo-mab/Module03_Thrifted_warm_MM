@@ -24,7 +24,7 @@
           <td>
             <img :src="getImageUrl(product)" alt="Product Image" class="img-thumbnail" width="80">
           </td>
-          <td>{{ product.name }}</td>
+          <td>{{ product.product_name }}</td>
           <td>{{ product.description }}</td>
           <td>{{ product.color }}</td>
           <td>R{{ product.price }}</td>
@@ -39,7 +39,7 @@
     </table>
 
     <!-- Product Form Modal -->
-    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="productModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -50,27 +50,27 @@
             <form @submit.prevent="isEditing ? updateProduct() : addProduct()">
               <div class="mb-3">
                 <label class="form-label">Product Name</label>
-                <input v-model="Data.name" type="text" class="form-control" required>
+                <input v-model="data.product_name" type="text" class="form-control" required>
               </div>
               <div class="mb-3">
                 <label class="form-label">Description</label>
-                <textarea v-model="Data.description" class="form-control" required></textarea>
+                <textarea v-model="data.description" class="form-control" required></textarea>
               </div>
               <div class="mb-3">
                 <label class="form-label">Color</label>
-                <input v-model="Data.color" type="text" class="form-control">
+                <input v-model="data.color" type="text" class="form-control">
               </div>
               <div class="mb-3">
                 <label class="form-label">Price (R)</label>
-                <input v-model="Data.price" type="number" class="form-control" required>
+                <input v-model="data.price" type="number" class="form-control" required>
               </div>
               <div class="mb-3">
                 <label class="form-label">Stock</label>
-                <input v-model="Data.stock" type="number" class="form-control" required>
+                <input v-model="data.stock" type="number" class="form-control" required>
               </div>
               <div class="mb-3">
                 <label class="form-label">Category</label>
-                <select v-model="Data.category_name" class="form-control" required>
+                <select v-model="data.category_name" class="form-control" required>
                   <option>Men</option>
                   <option>Women</option>
                   <option>Kids</option>
@@ -79,7 +79,7 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Image URL</label>
-                <input v-model="Data.image_url" type="text" class="form-control" required>
+                <input v-model="data.image_url" type="text" class="form-control" required>
               </div>
               <button type="submit" class="btn btn-success">{{ isEditing ? 'Update' : 'Add' }}</button>
             </form>
@@ -100,9 +100,9 @@ export default {
   data() {
     return {
       products: [],
-      Data: {
+      data: {
         product_id: null,
-        name: '',
+        product_name: '',
         description: '',
         color: '',
         price: '',
@@ -140,7 +140,7 @@ export default {
     
     openAddModal() {
       this.isEditing = false;
-      this.Data = {
+      this.data = {
         name: '',
         description: '',
         color: '',
@@ -153,7 +153,7 @@ export default {
     },
     openEditModal(product) {
       this.isEditing = true;
-      this.Data = { ...product };
+      this.data = { ...product };
       this.showModal();
     },
     showModal() {
@@ -168,7 +168,7 @@ export default {
     },
     async addProduct() {
       try {
-        await axios.post("http://localhost:5050/products", this.Data);
+        await axios.post("http://localhost:5050/products", this.data);
         this.fetchProducts();
         this.hideModal();
       } catch (error) {
@@ -177,7 +177,7 @@ export default {
     },
     async updateProduct() {
       try {
-        await axios.put(`http://localhost:5050/products/${this.Data.product_id}`, this.Data);
+        await axios.patch(`http://localhost:5050/products/${this.data.product_id}`, this.data);
         this.fetchProducts();
         this.hideModal();
       } catch (error) {

@@ -15,6 +15,7 @@ import ProductManagementView from '@/views/ProductManagementView.vue';
 import OrderManagementView from '@/views/OrderManagementView.vue';
 import AdminLoginView from '@/views/AdminLoginView.vue';
 import AdminRegisterView from '@/views/AdminRegisterView.vue';
+import UsersView from '@/views/UsersView.vue';
 
 
 
@@ -98,6 +99,11 @@ const routes = [
     path: "/admin/login",
     name: "adminLogin",
     component: AdminLoginView,
+  },
+  {
+    path: "/admin/users",
+    name: "users",
+    component: UsersView,
   },
   {
     path: "/admin/register",

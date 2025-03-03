@@ -28,9 +28,7 @@
         <li class="nav-item">
           <router-link to="/admin/users" class="nav-link">Users</router-link>
         </li>
-        <li class="nav-item">
-          <router-link to="/admin/analytics" class="nav-link">Analytics</router-link>
-        </li>
+        
         <!-- Authentication Links -->
         <li class="nav-item">
           <router-link v-if="!isAuthenticated" to="/login" class="nav-link" @click="hideMenu">Login</router-link>

@@ -1,10 +1,8 @@
 <template>
   <div>
-    <!-- Show User Navbar for user routes -->
-    <Navbar v-if="!isAdminRoute" />
-
-    <!-- Show Admin Navbar for admin routes -->
-    <AdminNavbar v-if="isAdminRoute" />
+    <!-- Hide all navbars on login pages -->
+    <Navbar v-if="showUserNavbar" />
+    <AdminNavbar v-if="showAdminNavbar" />
 
     <router-view />
   </div>
@@ -19,15 +17,23 @@ import AdminNavbar from "./components/AdminNavbar.vue";
 export default {
   components: {
     Navbar,
-    AdminNavbar
+    AdminNavbar,
   },
   setup() {
     const route = useRoute();
 
-    // Check if the current route is under '/admin'
+    // Define login page conditions
+    const isUserLoginPage = computed(() => route.path === "/login");
+    const isAdminLoginPage = computed(() => route.path === "/admin/login");
     const isAdminRoute = computed(() => route.path.startsWith("/admin"));
 
-    return { isAdminRoute };
+    // Hide navbar on both login pages
+    const isLoginPage = computed(() => isUserLoginPage.value || isAdminLoginPage.value);
+
+    return {
+      showUserNavbar: computed(() => !isLoginPage.value && !isAdminRoute.value),
+      showAdminNavbar: computed(() => !isLoginPage.value && isAdminRoute.value),
+    };
   }
 };
 </script>

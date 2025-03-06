@@ -1,13 +1,15 @@
 import dotenv from "dotenv";
-import { registerUser, getUserByEmail } from "../Model/authDb.js";
+import { registerUser, getUserByEmail} from "../Model/authDb.js";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import * as db from "../Model/authDb.js"; // ✅ Import db correctly
+
 dotenv.config();
 
 // Register User (Default: user)
 const registerCon = async (req, res) => {
     const { name, email, password, phone, address, role = "user" } = req.body;
     
-    // Prevent creating an admin unless explicitly stated
     if (role !== "user" && role !== "admin") {
         return res.status(400).json({ error: "Invalid role specified" });
     }
@@ -18,22 +20,17 @@ const registerCon = async (req, res) => {
     res.json({ message: result.message });
 };
 
-
-// Admin Registration Route
+// Admin Registration
 const registerAdmin = async (req, res) => {
     const { name, email, password } = req.body;
     const existingAdmin = await getUserByEmail(email);
     if (existingAdmin) return res.status(400).json({ error: "Admin already exists" });
 
-    const role = "admin";
-    const result = await registerUser(name, email, password, null, null, role);
+    const result = await registerUser(name, email, password, null, null, "admin");
     if (!result.success) return res.status(500).json({ error: result.error });
 
     res.json({ success: true, message: "Admin registered successfully" });
 };
-
-
-
 
 // User Login
 const login = async (req, res) => {
@@ -48,7 +45,7 @@ const login = async (req, res) => {
     res.json({ user_id: user.user_id, role: user.role });
 };
 
-// Admin Login (Separate Route)
+// Admin Login
 const adminLogin = async (req, res) => {
     const { email, password } = req.body;
 
@@ -66,5 +63,31 @@ const adminLogin = async (req, res) => {
     }
 };
 
+// Forgot Password Controller
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await db.getUserByEmail(email);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-export { registerCon, registerAdmin, login, adminLogin };
+        // ✅ Generate correct reset link
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const resetExpiry = new Date(Date.now() + 3600000); // 1 hour expiry
+        await db.updateResetToken(email, resetToken, resetExpiry);
+
+        // ✅ Make sure it uses 8080, not 5050
+        const resetLink = `http://localhost:8080/reset-password?token=${resetToken}`;
+
+        await sendEmail(email, "Password Reset Request", resetLink);
+
+        res.status(200).json({ message: "Reset email sent" });
+    } catch (error) {
+        console.error("Error in forgotPassword:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// ✅ Export functions (resetPassword function removed)
+export { registerCon, registerAdmin, login, adminLogin, forgotPassword };

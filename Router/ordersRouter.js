@@ -4,7 +4,7 @@ import {
   getUserCheckoutDetailsCon,
   adminGetAllOrdersCon,
   adminUpdateOrderTrackingInfoCon
-} from '../controller/ordersCon.js';
+} from '../Controller/ordersCon.js';
 const router = express.Router();
 // Route to create an order
 router.post('/', createOrderCon);
@@ -15,9 +15,3 @@ router.patch('/:order_id', adminUpdateOrderTrackingInfoCon);
 // Route to get user checkout details
 router.get('/:user_id', getUserCheckoutDetailsCon);
 export default router;
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-import { getOrderItems, getOrderItemById, insertOrderItems, deleteOrderItems, updateOrderItems } from "../model/orderItemsDb.js";
+import { getOrderItems, getOrderItemById, insertOrderItems, deleteOrderItems, updateOrderItems } from "../Model/orderItemsDb.js";
 const getOrderItemsCon = async (req, res) => {
     try{
         res.status(200).json({order_items: await getOrderItems()});
@@ -50,3 +50,9 @@ const insertOrderItemsCon = async (req,res) => {
     }
   }
 export {getOrderItemsCon, getOrderItemByIdCon, insertOrderItemsCon, deleteOrderItemsCon, updateOrderItemsCon}
+
+
+
+
+
+

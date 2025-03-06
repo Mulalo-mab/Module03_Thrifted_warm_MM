@@ -1,30 +1,62 @@
 import { pool } from "../config/config.js";
 // Create order and move cart items to the orders table
+// const createOrder = async (user_id, cartItems, total_price, shipping_details) => {
+//   try {
+//     // Create the order in the orders table
+//     const [orderResult] = await pool.query(
+//       `INSERT INTO orders (user_id, total_price, status) VALUES (?, ?, 'Pending')`,
+//       [user_id, total_price]
+//     );
+//     const order_id = orderResult.insertId;
+//     // Insert cart items into the orders table directly
+//     const orderItemQueries = cartItems.map(item =>
+//       pool.query(
+//         `INSERT INTO orders (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`,
+//         [order_id, item.product_id, item.quantity, item.price]
+//       )
+//     );
+//     await Promise.all(orderItemQueries);
+//     // Insert or update shipping details
+//     await pool.query(
+//       `INSERT INTO shipping (user_id, order_id, name, address, city, zipcode, country)
+//        VALUES (?, ?, ?, ?, ?, ?, ?)
+//        ON DUPLICATE KEY UPDATE name=VALUES(name), address=VALUES(address), city=VALUES(city), zipcode=VALUES(zipcode), country=VALUES(country)`,
+//       [user_id, order_id, shipping_details.name, shipping_details.address, shipping_details.city, shipping_details.zipcode, shipping_details.country]
+//     );
+//     return { success: true, order_id };
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+//testing
 const createOrder = async (user_id, cartItems, total_price, shipping_details) => {
   try {
-    // Create the order in the orders table
+    // Step 1: Insert into `orders` table
     const [orderResult] = await pool.query(
       `INSERT INTO orders (user_id, total_price, status) VALUES (?, ?, 'Pending')`,
       [user_id, total_price]
     );
     const order_id = orderResult.insertId;
-    // Insert cart items into the orders table directly
+    // Step 2: Move items from `cart` to `orders`
     const orderItemQueries = cartItems.map(item =>
       pool.query(
-        `INSERT INTO orders (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`,
+        `INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`,
         [order_id, item.product_id, item.quantity, item.price]
       )
     );
     await Promise.all(orderItemQueries);
-    // Insert or update shipping details
+    // Step 3: Insert shipping details
     await pool.query(
-      `INSERT INTO shipping (user_id, order_id, name, address, city, zipcode, country)
-       VALUES (?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO shipping (user_id, name, address, city, zipcode, country)
+       VALUES (?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE name=VALUES(name), address=VALUES(address), city=VALUES(city), zipcode=VALUES(zipcode), country=VALUES(country)`,
-      [user_id, order_id, shipping_details.name, shipping_details.address, shipping_details.city, shipping_details.zipcode, shipping_details.country]
+      [user_id, shipping_details.name, shipping_details.address, shipping_details.city, shipping_details.zipcode, shipping_details.country]
     );
+    // Step 4: Remove items from the cart
+    await pool.query(`DELETE FROM cart WHERE user_id = ?`, [user_id]);
     return { success: true, order_id };
   } catch (error) {
+    console.error("Error creating order:", error);
     throw error;
   }
 };
@@ -53,6 +85,7 @@ const getUserCheckoutDetails = async (user_id) => {
     throw error;
   }
 };
+// console.log("Fetched cartItems: ", cartItems);
 export { createOrder, getUserCheckoutDetails };
 // Get all orders with their items
 export const adminGetOrders = async () => {
@@ -76,14 +109,14 @@ export const adminGetOrders = async () => {
     for (let order of orders) {
       const [items] = await pool.query(`
         SELECT
-          oi.product_id,
-          oi.quantity,
-          oi.price,
+          order_items.product_id,
+          order_items.quantity,
+          order_items.price,
           p.name AS product_name,
           p.image_url
-        FROM order_items oi
-        JOIN products p ON oi.product_id = p.product_id
-        WHERE oi.order_id = ?;
+        FROM order_items
+        JOIN products p ON order_items.product_id = p.product_id
+        WHERE order_items.order_id = ?;
       `, [order.order_id]);
       order.items = items;
     }
@@ -108,3 +141,9 @@ export const AdminUpdateOrderTracking = async (orderId, trackingNumber, carrier,
     throw error;
   }
 };
+
+
+
+
+
+

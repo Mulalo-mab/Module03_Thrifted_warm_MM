@@ -1,4 +1,4 @@
-import { createOrder, getUserCheckoutDetails, AdminUpdateOrderTracking, adminGetOrders } from '../model/ordersDb.js';
+import { createOrder, getUserCheckoutDetails, AdminUpdateOrderTracking, adminGetOrders } from '../Model/ordersDb.js';
 // Controller to create an order
 export const createOrderCon = async (req, res) => {
   try {

@@ -24,11 +24,7 @@
                 <p class="card-price">R{{ product.price }}</p>
               </div>
               <div class="d-flex mt-auto">
-                <i
-                  :class="isFavorite(product.product_id) ? 'fas fa-heart text-danger' : 'far fa-heart text-muted'"
-                  class="icon favorite-icon me-3"
-                  @click.stop="toggleFavorite(product.product_id)"
-                ></i>
+               
               </div>
             </div>
           </div>

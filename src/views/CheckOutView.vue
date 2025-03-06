@@ -1,198 +1,239 @@
 <template>
-  <div class="body">
-   <div class="checkout">
-     <h2>Checkout</h2>
-     <div v-if="userDetails">
-       <h3>User Information</h3>
-       <p><strong>Name:</strong> {{ userDetails.name }}</p>
-       <p><strong>Email:</strong> {{ userDetails.email }}</p>
-       <h3>Shipping Address</h3>
-       <div v-if="userDetails.shipping_address">
-        <p><strong>Address:</strong> {{ userDetails.shipping_address }}</p>
-        <p><strong>City:</strong> {{ userDetails.city }}</p>
-        <p><strong>Postal Code:</strong> {{ userDetails.zipcode }}</p>
-        <p><strong>Country:</strong> {{ userDetails.country }}</p>
-       </div>
-       <div v-else>
-         <p class="error">Please add your shipping details below.</p>
-         <input v-model="shipping.name" placeholder="Name" required />
-         <input v-model="shipping.address" placeholder="Address" required />
-         <input v-model="shipping.city" placeholder="City" required />
-         <input v-model="shipping.zipcode" placeholder="Zip Code" required />
-         <input v-model="shipping.country" placeholder="Country" required />
-       </div>
-     </div>
-     <h3>Order Items</h3>
-     <div v-for="item in order_items" :key="item.product_id">
-       <img :src="item.image_url || 'path/to/placeholder-image.jpg'" alt="Product Image" />
-       <p>{{ item.quantity }} x Product {{ item.product_id }} - R{{ item.price }}</p>
-     </div>
-     <h3 align="center">Cart Total: R{{ totalPrice }}</h3>
-     <h3 align="center">Delivery Fee: R{{ deliveryFee }}</h3>
-     <h2>Total: R{{ totalPrice + deliveryFee }} </h2>
-     <button @click="placeOrder">Place Order</button>
-   </div>
+  <div class="checkout-container">
+    <!-- Shipping Form -->
+    <form @submit.prevent="submitShippingDetails">
+      <h2>Shipping Details</h2>
+      <input v-model="shippingDetails.name" placeholder="Name" required />
+      <input v-model="shippingDetails.address" placeholder="Address" required />
+      <input v-model="shippingDetails.city" placeholder="City" required />
+      <input v-model="shippingDetails.zipcode" placeholder="Zipcode" required />
+      <input v-model="shippingDetails.country" placeholder="Country" required />
+      <button type="submit">Save Shipping Details</button>
+    </form>
+    <!-- Payment Form -->
+    <form @submit.prevent="submitPayment">
+      <h2>Payment Details</h2>
+      <p>Total Amount: {{ totalAmount }}</p>
+      <!-- Card Payment Form -->
+      <h3>Card Payment</h3>
+      <div>
+        <label for="card_number">Card Number</label>
+        <input v-model="cardDetails.card_number" type="text" placeholder="1234 5678 9101 1121" required maxlength="16" />
+      </div>
+      <div>
+        <label for="card_expiry">Expiry Date (MM/YY)</label>
+        <input v-model="cardDetails.card_expiry" type="text" placeholder="MM/YY" required />
+      </div>
+      <div>
+        <label for="card_cvc">CVC</label>
+        <input v-model="cardDetails.card_cvc" type="text" placeholder="123" required maxlength="3" />
+      </div>
+      <button type="submit">Proceed to Payment</button>
+    </form>
+    <!-- Payment Success Modal -->
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <h2>Payment Successful!</h2>
+        <p>Your payment has been successfully processed.</p>
+        <button @click="redirectToConfirmation">OK</button>
+      </div>
+    </div>
   </div>
-  <footer class="footer text-center text-white">
-       <div class="container">
-         <p>&copy; 2025 Thrifted Winter Coats | 123 Winter Lane, Cape Town</p>
-         <div class="social-links">
-           <a href="#"><i class="fab fa-twitter"></i></a>
-           <a href="#"><i class="fab fa-facebook"></i></a>
-           <a href="#"><i class="fab fa-instagram"></i></a>
-         </div>
-       </div>
-     </footer>
- </template>
- <script>
- import axios from "axios";
- export default {
-   data() {
-     return {
-       userDetails: null,
-       order_items: [],
-       totalPrice: 0,
-       deliveryFee: 0,
-       total: 0,
-       shipping: {
-         address: "",
-         city: "",
-         postal_code: "",
-         country: "",
-       },
-     };
-   },
-   async created() {
-   const userId = localStorage.getItem("user_id");
-   try {
-     const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/checkout/${userId}`);
-     this.userDetails = response.data.userDetails;
-     this.order_items = response.data.cartItems;
-     // Update image URLs similar to getData method
-     this.order_items = this.order_items.map((item) => {
-       let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
-       if (item.category_name === "Women") {
-         baseUrl += "WomenProducts/";
-       } else if (item.category_name === "Men") {
-         baseUrl += "MenProducts/";
-       } else if (item.category_name === "Kids") {
-         baseUrl += "KidsProducts/";
-       } else {
-         baseUrl += "OtherProducts/";
-       }
-       const imageUrl = `${baseUrl}${item.image_url.split('/').pop()}`;
-   console.log("Generated Image URL:", imageUrl);  // Log the URL to check if it’s correct
-   return {
-     ...item,
-     image_url: imageUrl,
-   };
- });
-     this.deliveryFee = 100;
-     this.totalPrice = this.order_items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-   } catch (error) {
-     console.error("Error fetching checkout data:", error);
-   }
- },
-   methods: {
-     async placeOrder() {
-       const userId = localStorage.getItem("user_id");
-       try {
-         const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/checkout`, {
-           user_id: userId,
-           items: this.order_items,
-           total_price: this.totalPrice,
-           shipping_details: this.userDetails.address
-             ? this.userDetails
-             : this.shipping,
-         });
-         if (response.data.success) {
-           this.$router.push({ name: "payment", params: { orderId: response.data.order_id } });
-         } else {
-           alert("Failed to place order.");
-         }
-       } catch (error) {
-         console.error(error);
-         alert("An error occurred while placing the order.");
-       }
-     },
-   },
- };
- </script>
- <style scoped>
- .footer {
-   background: #8B4513;
-   padding: 20px;
-   color:black;
-   bottom: 0;
-   left: 0;
-   width: 100%;
- }
- .error {
-   color: red;
- }
- .checkout {
-   max-width: 800px;
-   margin: 0 auto;
-   padding: 20px;
-   background-color: #F4ECE0;
-   border-radius: 10px;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-   font-family: Arial, sans-serif;
-   color: #4E3629;
- }
- h2, h3 {
-   color: #6B4F35;
- }
- h2 {
-   text-align: center;
-   margin-bottom: 20px;
- }
- h3 {
-   margin-top: 20px;
- }
- p {
-   margin: 5px 0;
- }
- strong {
-   color: #8A5A44;
- }
- .error {
-   color: #D9534F;
-   font-weight: bold;
- }
- input {
-   display: block;
-   width: 100%;
-   padding: 10px;
-   margin: 10px 0;
-   border: 1px solid #C4A484;
-   border-radius: 5px;
-   box-sizing: border-box;
- }
- input:focus {
-   border-color: #8A5A44;
-   outline: none;
- }
- img {
-   width: 100px;
-   height: 100px;
-   object-fit: cover;
-   border-radius: 8px;
-   margin-right: 10px;
- }
- button {
-   display: block;
-   width: 100%;
-   padding: 15px;
-   background-color: #8A5A44;
-   color: #fff;
-   border: none;
-   border-radius: 5px;
-   font-size: 16px;
-   cursor: pointer;
-   transition: background-color 0.3s;
- }
- button:hover {
-   background-color: #6B4F35;
- }
- </style>
+</template>
+<script>
+import axios from 'axios';
+export default {
+  data() {
+    return {
+      user_id: this.getUserId(), // Dynamically fetch user ID
+      shippingDetails: {
+        name: '',
+        address: '',
+        city: '',
+        zipcode: '',
+        country: ''
+      },
+      totalAmount: 0, // This will be fetched from the cart
+      cardDetails: {
+        card_number: '',
+        card_expiry: '',
+        card_cvc: ''
+      },
+      order_id: null, // Set this when order is created
+      showModal: false, // Add this to control the modal visibility
+      cartItems: [] // Add this to store cart items
+    };
+  },
+  created() {
+    this.fetchCheckoutDetails();
+  },
+  methods: {
+    // Function to fetch the user ID dynamically (can be from localStorage, Vuex, or other means)
+    getUserId() {
+      // Check localStorage first
+      let userId = localStorage.getItem("user_id");
+      // If no user_id in localStorage, consider checking other sources (like Vuex or API)
+      if (!userId) {
+        // Potential fallback if there's no user_id saved in localStorage
+        userId = 'default_user_id'; // Replace this with actual fallback logic
+      }
+      return userId;
+    },
+    async fetchCheckoutDetails() {
+      try {
+        const response = await axios.get(`http://localhost:5050/api/checkout/${this.user_id}`);
+        const { userDetails, cartItems } = response.data;
+        this.cartItems = cartItems; // Store cart items
+        // Calculate total amount from cart items
+        this.totalAmount = cartItems.reduce((total, item) => total + item.total_price, 0);
+      } catch (error) {
+        console.error("Error fetching checkout details:", error);
+      }
+    },
+    async submitShippingDetails() {
+      // Validate the shipping details before sending
+      if (!this.shippingDetails.name || !this.shippingDetails.address || !this.shippingDetails.city || !this.shippingDetails.zipcode || !this.shippingDetails.country) {
+        alert("Please fill in all fields.");
+        return;
+      }
+      try {
+        // Log the shipping details to check if they are correct
+        console.log("Shipping Details:", this.shippingDetails);
+        const response = await axios.post(`http://localhost:5050/api/checkout/${this.user_id}/shipping`, this.shippingDetails);
+        alert('Shipping details saved!');
+      } catch (error) {
+        // Log the full error response for more details
+        console.error('Error saving shipping details:', error.response ? error.response.data : error);
+        alert('Error saving shipping details.');
+      }
+    },
+    async submitPayment() {
+      if (!this.cardDetails.card_number || !this.cardDetails.card_expiry || !this.cardDetails.card_cvc) {
+        alert("Please enter all card details.");
+        return;
+      }
+      const cardValidation = this.validateCardDetails();
+      if (!cardValidation.isValid) {
+        alert(cardValidation.message);
+        return;
+      }
+      try {
+        const paymentData = {
+          user_id: this.user_id,
+          amount: this.totalAmount,
+          method: 'credit_card',
+          card_number: this.cardDetails.card_number,
+          card_expiry: this.cardDetails.card_expiry,
+          card_cvc: this.cardDetails.card_cvc
+        };
+        const response = await axios.post(`http://localhost:5050/api/checkout/${this.user_id}/payment`, paymentData);
+        // If payment is successful, create an order
+        if (response.data.success) {
+          const orderData = {
+            user_id: this.user_id,
+            cartItems: this.cartItems,
+            total_price: this.totalAmount,
+            shipping_details: this.shippingDetails
+          };
+          const orderResponse = await axios.post(`http://localhost:5050/api/checkout/`, orderData);
+          if (orderResponse.data.success) {
+            this.showModal = true; // Show success modal
+          } else {
+            alert("Failed to create order.");
+          }
+        }
+      } catch (error) {
+        console.error('Error processing payment:', error);
+        alert('Error processing payment.');
+      }
+    },
+    validateCardDetails() {
+      const { card_number, card_expiry, card_cvc } = this.cardDetails;
+      // Validate card number (16 digits)
+      const cardNumberRegex = /^[0-9]{16}$/;
+      if (!cardNumberRegex.test(card_number)) {
+        return { isValid: false, message: "Card number must be 16 digits." };
+      }
+      // Validate expiry date (MM/YY)
+      const expiryDateRegex = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
+      if (!expiryDateRegex.test(card_expiry)) {
+        return { isValid: false, message: "Invalid expiry date format. Use MM/YY." };
+      }
+      // Validate CVC (3 digits)
+      const cvcRegex = /^[0-9]{3}$/;
+      if (!cvcRegex.test(card_cvc)) {
+        return { isValid: false, message: "CVC must be 3 digits." };
+      }
+      return { isValid: true, message: "" };
+    },
+    // Redirect to confirmation page
+    redirectToConfirmation() {
+      this.$router.push({ name: 'confirmation' });
+    }
+  }
+};
+</script>
+<style scoped>
+.checkout-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+h2 {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+}
+input {
+  width: 100%;
+  padding: 0.5em;
+  margin: 0.5em 0;
+}
+button {
+  width: 100%;
+  padding: 1em;
+  margin-top: 1em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #45A049;
+}
+select {
+  width: 100%;
+  padding: 0.5em;
+  margin: 0.5em 0;
+}
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background-color: white;
+  padding: 2em;
+  border-radius: 8px;
+  text-align: center;
+}
+.modal-content h2 {
+  margin-bottom: 1em;
+}
+.modal-content button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  cursor: pointer;
+}
+.modal-content button:hover {
+  background-color: #45A049;
+}
+</style>

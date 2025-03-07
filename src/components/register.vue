@@ -1,7 +1,9 @@
 <template>
+  <br>
+  <br>
   <div class="register hero">
     <div class="container mt-5">
-      <h1>Register</h1>
+      <h1>Sign Up</h1>
       <form @submit.prevent="registerUser">
        
         <div class="mb-3">
@@ -68,7 +70,7 @@
   
         
         <div class="col-auto">
-          <button type="submit" class="btn btn-primary">Register</button>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
         </div>
       </form>
   

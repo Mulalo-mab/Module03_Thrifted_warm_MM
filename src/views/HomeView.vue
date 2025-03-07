@@ -1,4 +1,6 @@
 <template>
+  <br>
+  <!-- <br> -->
   <div class="home section">
     <login-prompt-modal ref="loginModal" />
     <!-- Hero Section -->
@@ -12,7 +14,6 @@
         <router-link to="/products" class="btn btn-warning">Shop Now</router-link>
       </div>
     </section>
-
     <!-- Our Journey to Warmth and Style -->
      <div class="our-journey-Color">
       <section class="our-journey container d-flex align-items-center">
@@ -22,11 +23,8 @@
         <p>At Thrifted Warmth, we specialize in high-quality imported European winter coats with a strong emphasis on reusing and recycling. Our collection features a wide range of options for men, women, and kids, including puffer jackets and leather coats, all offered at affordable prices ranging from R100 to R600. With a commitment to sustainability and style, we aim to provide warmth while protecting the environment.</p>
         <router-link to="/about" class="btn btn-warning">Learn More</router-link>
       </div>
-      <img :src="journeyImage2" class="journey-img" alt="Our Journey">
     </section>
      </div>
-   
-
     <section class="variety-section">
     <div class="category">
         <h2>Women's Collection</h2>
@@ -53,21 +51,18 @@
         <p>&copy; 2025 Thrifted Winter Coats | 123 Winter Lane, Cape Town</p>
         <div class="social-links">
           <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="https://www.facebook.com/profile.php?id=61573378632616"><i class="fab fa-facebook"></i></a>
           <a href="#"><i class="fab fa-instagram"></i></a>
         </div>
       </div>
     </footer>
   </div>
 </template>
-
 <script>
 import LoginPromptModal from '@/components/LoginPromptModal.vue';
-
 export default {
   components:{
     LoginPromptModal,
-
   },
   data() {
     return {
@@ -81,7 +76,6 @@ export default {
       ],
       logo: require("../assets/Thrifted_Warmth_Promo.jpg"),
       journeyImage: require('../assets/journeyImg.jpg'),
-      journeyImage2: require('../assets/manWearingAcoat.jpg'),
       catalogues: [
         { name: "Women's Collection", subtitle:"Chic & Cozy", description: "Indulge in our women's selection that combines elegance with comfort. Whether you're looking for a trendy puffer jacket or a classic leather coat, we have the perfect choice to keep you stylish and snug.", image: require('../assets/Coat02.png') },
         { name: "Men's Collection", subtitle:" Stylish and Practical", description: "Sophisticated and warm, just for him.", image: require('../assets/Coat06.png')  },
@@ -104,7 +98,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 /* Colors */
 :root {
@@ -131,7 +124,6 @@ export default {
   border-radius: 100%;
   animation: slideUp 1.5s ease-out;
 }
-
 .hero::before {
   content: '';
   position: absolute;
@@ -145,22 +137,19 @@ export default {
   filter: blur(3px);
   z-index: -1; /* Ensure the content is above the blurred background */
 }
-
 .hero-title {
   font-family: 'Playfair Display', serif;
   font-size: 4rem;
   font-weight: 700;
-  color: #f0ad4e;
+  color: #F0AD4E;
   animation: slideUp 1.5s ease-out;
 }
-
 .hero-subtitle {
   font-family: 'Poppins', sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
   animation: slideUp 1.5s ease-out;
 }
-
 .hero-description {
   font-family: 'Poppins', sans-serif;
   font-size: 1.2rem;
@@ -168,35 +157,26 @@ export default {
   margin-bottom: 20px;
   animation: slideUp 1.5s ease-out;
 }
-
-/* Our Journey Section */
-.our-journey-Color{
-  transition: transform 0.3s;
-  background-color: #f9daaf;
-  
-}
 .journey-text {
-    font-family: 'Playfair Display', serif; 
+    font-family: 'Playfair Display', serif;
     text-align: center;
     padding: 40px;
     margin-top: 30px;
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
+    border: 1px solid #E0E0E0;
     width: 80%;
     margin-left: auto;
     margin-right: auto;
     animation: slideUp 1.5s ease-out;
     transition: transform 0.3s;
 }
-
 .journey-text h2 {
     font-family: 'Playfair Display', serif;
     font-size: 28px;
     color: #333;
     /* animation: slideUp 2.5s ease-out; */
 }
-
 .journey-text p {
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
@@ -204,9 +184,8 @@ export default {
     line-height: 1.6;
     margin-bottom: 20px;
 }
-
 .btn-warning {
-    background-color: #f0ad4e;
+    background-color: #F0AD4E;
     border: none;
     color: white;
     padding: 10px 20px;
@@ -218,15 +197,16 @@ export default {
     animation: slideUp 1.5s ease-out;
     font-family: 'Poppins', sans-serif;
 }
-
 .btn-warning:hover {
-    background-color: #ec971f;
+    background-color: #EC971F;
 }
 .our-journey {
   display: flex;
   align-items: center;
   gap: 20px;
   padding: 50px 0;
+  transition: transform 0.3s;
+  flex-wrap: wrap;
 }
 .journey-img {
   width: 350px;
@@ -234,7 +214,15 @@ export default {
   border-radius: 10px;
 }
 .journey-text {
-  width: 50%;
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  margin-top: 30px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E0E0E0;
+  animation: slideUp 1.5s ease-out;
+  transition: transform 0.3s;
 }
 .journey-text h2 {
   color: var(--brown);
@@ -242,34 +230,29 @@ export default {
 .journey-text p {
   color: var(--text-dark);
 }
-
 .variety-section {
     display: flex;
     justify-content: space-around;
     text-align: center;
     padding: 50px;
-    background-color: #f7f2eb;
+    background-color: #F7F2EB;
 }
-
 .category {
     width: 30%;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #E0E0E0;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     transition: transform 0.3s;
 }
-
 .category:hover {
     transform: translateY(-10px);
 }
-
 h2 {
-    font-family: 'Playfair Display', serif; 
+    font-family: 'Playfair Display', serif;
     font-size: 24px;
     color: #333;
 }
-
 h3 {
     font-family: 'Playfair Display', serif;
     font-size: 18px;
@@ -293,12 +276,14 @@ p {
 .shop-now-btn:hover {
   background: var(--dark-brown);
 }
-
 /* Footer */
 .footer {
-  background: black;
+  background: #8B4513;
   padding: 20px;
-  color:black
+  color:black;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 .footer p {
   color: var(--text-light);
@@ -308,7 +293,6 @@ p {
   font-size: 20px;
   margin: 0 10px;
 }
-
 /* Slide Up Animation */
 @keyframes slideUp {
   0% {
@@ -320,20 +304,127 @@ p {
     transform: translateY(0);
   }
 }
-
-/* Staggered Animation Delays */
-.hero {
-  animation-delay: 0.5s;
-}
-.our-journey {
-  animation-delay: 1s;
-  transition: transform 0.3s;
-}
-.variety-section {
-  animation-delay: 1.5s;
-}
+y
 .footer {
   animation-delay: 2s;
 }
-
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  .journey-text {
+    width: 100%;
+    padding: 20px;
+  }
+  .variety-section {
+    flex-direction: column;
+    padding: 20px;
+  }
+  .category {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+/* For screens with a max width of 320px */
+@media (max-width: 320px) {
+  .hero-title {
+    font-size: 28px;
+  }
+  .journey-text {
+    width: 100%;
+    padding: 10px;
+  }
+  .journey-img{
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  img.logo{
+    margin-top: 100px;
+  }
+  .variety-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  .category {
+    width: 32%; /* Ensure 3 items fit side by side */
+    margin-bottom: 20px;
+  }
+}
+/* For screens with a max width of 567px */
+@media (max-width: 567px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  .journey-text {
+    width: 100%;
+    padding: 20px;
+  }
+  .variety-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+  }
+  .category {
+    width: 100%; /* Ensure 3 items fit side by side */
+    margin-bottom: 20px;
+  }
+}
+/* For screens with a max width of 768px */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+  .journey-text {
+    width: 100%;
+    padding: 30px;
+  }
+  .variety-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px;
+  }
+  .category {
+    width: 100%; /* Two items per row */
+    margin-bottom: 30px;
+  }
+}
+/* For screens with a max width of 992px */
+@media (max-width: 992px) {
+  .hero-title {
+    font-size: 3.5rem;
+  }
+  .journey-text {
+    width: 100%;
+    padding: 35px;
+  }
+  .variety-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 45px;
+  }
+  .category {
+    width: 100%; /* Two items per row */
+    margin-bottom: 30px;
+  }
+}
+/* For screens with a max width of 1024px */
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 28px;
+  }
+  .journey-text {
+    width: 700%;
+    padding: 40px;
+  }
+  .variety-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 50px;
+  }
+  .category {
+    width: 100%; /* Three items per row */
+    margin-bottom: 30px;
+  }
+}
 </style>

@@ -1,11 +1,10 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
     <a class="navbar-brand fw-bold" href="#">Admin Panel</a>
-
-    <button 
-      class="navbar-toggler" 
-      type="button" 
-      data-bs-toggle="collapse" 
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
       data-bs-target="#adminNavbar"
       aria-controls="adminNavbar"
       aria-expanded="false"
@@ -13,7 +12,6 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
-
     <div class="collapse navbar-collapse" id="adminNavbar">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
@@ -28,7 +26,6 @@
         <li class="nav-item">
           <router-link to="/admin/users" class="nav-link">Users</router-link>
         </li>
-        
         <!-- Authentication Links -->
         <li class="nav-item">
           <router-link v-if="!isAuthenticated" to="/login" class="nav-link" @click="hideMenu">Login</router-link>
@@ -38,7 +35,6 @@
     </div>
   </nav>
 </template>
-
 <script>
 export default {
   data() {

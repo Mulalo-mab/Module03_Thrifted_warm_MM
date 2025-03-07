@@ -1,7 +1,7 @@
 <template>
   <div class="login hero">
-  <div class="d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card p-4 shadow-lg" style="width: 400px;">
+  <div class="d-flex justify-content-center align-items-center min-vh-100 ">
+    <div class="card p-4 shadow-lg" style="width: 300px;">
       <h1 class="text-center">LOGIN</h1>
       <form @submit.prevent="handleLogin">
         <div class="mb-3">
@@ -33,10 +33,8 @@
   </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
@@ -78,7 +76,6 @@ export default {
   }
 };
 </script>
-
 <style >
 .login {
   background-image: url("../assets/background01.jpg");
@@ -107,12 +104,13 @@ export default {
 }
 .login .card {
   background-color: #ffffff2d;
+  width: 300px;
 }
 .card {
   border-radius: 12px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   background-color: #ffffff2d;
-  width: 100%;
+  width: 300px;
   max-width: 400px;
 }
 h1 {
@@ -233,7 +231,7 @@ button:disabled {
 /* 320px (Small Mobile Devices) */
 @media (max-width: 320px) {
    .card {
-    max-width:100%;
+    width:300px;
     padding: 10px;
     margin: 0;
     box-sizing: border-box;

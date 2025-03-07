@@ -1,4 +1,6 @@
 <template>
+  <br>
+  <br>
   <div class="container mt-4">
     <!-- Back to Products Button -->
     <button class="btn btn-secondary mb-4" @click="goBackToProducts">

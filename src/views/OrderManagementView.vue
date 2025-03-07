@@ -1,67 +1,66 @@
 <template>
   <div class="container mt-5">
-    <!-- Centered Heading -->
     <h1 class="text-center mb-4">Admin Orders</h1>
 
-    <!-- Orders Table with Bootstrap Striped and Hover -->
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>User</th>
-          <th>Email</th>
-          <th>Total Price</th>
-          <th>Status</th>
-          <th>Tracking</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="order in orders" :key="order.order_id">
-          <td>{{ order.order_id }}</td>
-          <td>{{ order.user_name }}</td>
-          <td>{{ order.user_email }}</td>
-          <td>R {{ order.total_price }}</td>
-          <td>
-            <span :class="getStatusClass(order.status)">{{ order.status }}</span>
-          </td>
-          <td>
-            <span v-if="order.tracking_number">
-              {{ order.carrier }} - {{ order.tracking_number }}
-            </span>
-            <span v-else class="text-danger">Not Assigned</span>
-          </td>
-          <td>
-            <button class="btn btn-primary btn-sm" @click="updateTracking(order)">Update Tracking</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Responsive Table Wrapper -->
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Email</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Tracking</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="order in orders" :key="order.order_id">
+            <td>{{ order.order_id }}</td>
+            <td>{{ order.user_name }}</td>
+            <td>{{ order.user_email }}</td>
+            <td>R {{ order.total_price }}</td>
+            <td>
+              <span :class="getStatusClass(order.status)">{{ order.status }}</span>
+            </td>
+            <td>
+              <span v-if="order.tracking_number">
+                {{ order.carrier }} - {{ order.tracking_number }}
+              </span>
+              <span v-else class="text-danger">Not Assigned</span>
+            </td>
+            <td>
+              <button class="btn btn-primary btn-sm" @click="updateTracking(order)">Update Tracking</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- Tracking Update Modal -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
-        <h2>Update Tracking</h2>
+        <h2 class="modal-title">Update Tracking</h2>
         <form @submit.prevent="submitTracking">
           <label>Tracking Number</label>
-          <input type="text" v-model="trackingDetails.tracking_number" required />
-          <br>
+          <input type="text" v-model="trackingDetails.tracking_number" required class="form-control" />
           <br>
 
           <label>Carrier</label>
-          <input type="text" v-model="trackingDetails.carrier" required />
-          <br>
+          <input type="text" v-model="trackingDetails.carrier" required class="form-control" />
           <br>
           
           <label>Status</label>
-          <select v-model="trackingDetails.status">
+          <select v-model="trackingDetails.status" class="form-control">
             <option value="Pending">Pending</option>
             <option value="Shipped">Shipped</option>
             <option value="Delivered">Delivered</option>
           </select>
 
-          <button type="submit" class="btn btn-success">Update</button>
-          <button type="button" class="btn btn-secondary" @click="showModal = false">Close</button>
+          <button type="submit" class="btn btn-success mt-3">Update</button>
+          <button type="button" class="btn btn-secondary mt-2" @click="showModal = false">Close</button>
         </form>
       </div>
     </div>
@@ -127,6 +126,13 @@ export default {
 </script>
 
 <style>
+/* Table Scroll for Small Screens */
+.table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -137,11 +143,88 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 10px;
 }
+
 .modal-content {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 400px;
+  width: 90%;
+  max-width: 400px;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-width: 350px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table th,
+  .table td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 320px) {
+  .table th,
+  .table td {
+    font-size: 11px;
+    padding: 4px;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 280px;
+    padding: 15px;
+  }
+
+  .modal-title {
+    font-size: 14px;
+  }
+
+  input,
+  select {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .btn {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
 }
 </style>

@@ -1,4 +1,6 @@
 <template>
+  <br>
+  <br>
   <div class="about section">
     <section class="about-header text-white d-flex align-items-center">
       <div class="container text-center">
@@ -375,5 +377,55 @@ font-size: 1.1rem;
 display: flex;
 flex-wrap: wrap;
 justify-content: center;
+}
+/* 320px */
+@media (max-width: 320px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+  }
+   .about-header{
+    height: 90vh;
+   }
+   .about-description{
+    font-size: 12px;
+   }
+   .about-subtitle{
+    font-size: 18px;
+   }
+   .about-title{
+    font-size: 28px;
+    margin-top: 60px;
+   }
+}
+/* 576px (Mobile Devices) */
+@media (max-width:576px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+  }
+}
+/*  768px (Tablets or smaller devices) */
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+/*  992px (Medium Screens like tablets) */
+@media (max-width: 992px) {
+ .card {
+   width: 100%;
+   max-width: 450px;
+ }
+}
+/*  1024px (Large Screens) */
+@media (max-width: 1024px) {
+  .card {
+    width: 100%;
+    max-width: 500px;
+  }
 }
 </style>

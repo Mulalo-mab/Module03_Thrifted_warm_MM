@@ -21,6 +21,16 @@
       {{ message }}
     </p>
   </div>
+  <footer class="footer text-center text-white">
+      <div class="container">
+        <p>&copy; 2025 Thrifted Winter Coats | 123 Winter Lane, Cape Town</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </footer>
 </template>
 
 <script>
@@ -57,6 +67,24 @@ export default {
 </script>
 
 <style scoped>
+.footer {
+  background: #8B4513;
+  padding: 20px;
+  color:black;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+.footer p {
+  color: var(--text-light);
+  font-family: 'Poppins', sans-serif;
+}
+.social-links a {
+  color: var(--text-light);
+  font-size: 20px;
+  margin: 0 10px;
+}
 .container { 
   max-width: 400px; 
   margin: auto; 

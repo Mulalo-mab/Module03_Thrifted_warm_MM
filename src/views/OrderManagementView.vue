@@ -1,8 +1,11 @@
 <template>
   <div class="container mt-5">
-    <h1>Admin Orders</h1>
-    <table class="table table-bordered mt-3">
-      <thead class="table-dark">
+    <!-- Centered Heading -->
+    <h1 class="text-center mb-4">Admin Orders</h1>
+
+    <!-- Orders Table with Bootstrap Striped and Hover -->
+    <table class="table table-striped table-hover">
+      <thead>
         <tr>
           <th>Order ID</th>
           <th>User</th>

@@ -1,12 +1,15 @@
 <template>
   <div class="container mt-5">
-    <h2 class="mb-4">Admin - Product Management</h2>
+    <!-- Centered Heading -->
+    <h1 class="text-center mb-4">Admin - Product Management</h1>
 
-    <!-- Add Product Button -->
-    <button class="btn btn-primary mb-3" @click="openAddModal">Add Product</button>
+    <!-- Centered Add Product Button -->
+    <div class="text-center mb-3">
+      <button class="btn btn-primary" @click="openAddModal">Add Product</button>
+    </div>
 
-    <!-- Product Table -->
-    <table class="table table-striped">
+    <!-- Product Table with Bootstrap Striped and Hover -->
+    <table class="table table-striped table-hover">
       <thead>
         <tr>
           <th>Image</th>
@@ -124,20 +127,18 @@ export default {
       }
     },
     getImageUrl(product) {
-  let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
-  if (product.category_name === "Men") {
-    baseUrl += "MenProducts/";
-  } else if (product.category_name === "Women") {
-    baseUrl += "WomenProducts/";
-  } else if (product.category_name === "Kids") {
-    baseUrl += "KidsProducts/";
-  } else {
-    baseUrl += "OtherProducts/";
-  }
-  return `${baseUrl}${product.image_url.split("/").pop()}`;
-},
-
-    
+      let baseUrl = "https://raw.githubusercontent.com/awonkenkibi/images/main/";
+      if (product.category_name === "Men") {
+        baseUrl += "MenProducts/";
+      } else if (product.category_name === "Women") {
+        baseUrl += "WomenProducts/";
+      } else if (product.category_name === "Kids") {
+        baseUrl += "KidsProducts/";
+      } else {
+        baseUrl += "OtherProducts/";
+      }
+      return `${baseUrl}${product.image_url.split("/").pop()}`;
+    },
     openAddModal() {
       this.isEditing = false;
       this.data = {
@@ -199,4 +200,5 @@ export default {
     this.fetchProducts();
   }
 };
+
 </script>
